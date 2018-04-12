@@ -1,4 +1,4 @@
-import Base from "../base.js";
+import Base from "../../base.js";
 import sha1 from "sha1";
 
 export default class extends Base {

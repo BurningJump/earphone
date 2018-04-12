@@ -79,7 +79,6 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log('----------------')
           this.registerForm.pwd = this.md5(this.registerForm.pwd)
           this.registerForm.repwd = this.md5(this.registerForm.repwd)
           this.$http.post('api/user/register', this.registerForm).then(res => {
