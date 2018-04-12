@@ -1,3 +1,2 @@
-module.exports = class extends think.Model {
-
-};
+export default class extends think.Model {
+}
