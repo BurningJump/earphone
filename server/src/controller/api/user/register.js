@@ -3,16 +3,16 @@ import sha1 from "sha1";
 
 export default class extends Base {
   // 用户注册
-  async indexAction() {
+  async postAction() {
     try {
-      const acc = this.get('phone'),
-        pwd = this.get('pwd'),
-        repwd = this.get('repwd')
+      const acc = this.post('phone'),
+        pwd = this.post('pwd'),
+        repwd = this.post('repwd')
 
       let data = await this.model('USER').findUser(acc)
 
       if (!think.isEmpty(data)) {
-        return this.fail(`账户名为${acc}的用户已存在`)
+        return this.fail(`手机号${acc}已注册!`)
       } else {
         if (pwd === repwd) {
           let id = await this.model('USER').addUser({
@@ -20,15 +20,13 @@ export default class extends Base {
             pwd: sha1(pwd),
             phone: acc,
             nickname: '发烧友-' + new Date().getTime(),
-            // regTime: parseInt(new Date().getTime() / 1000),
             regType: 0,
-            // lastLoginTime: parseInt(new Date().getTime() / 1000)
           })
           if (id) {
-            this.session(acc, phone, nickname)
+            this.success('注册成功!')
           }
         } else {
-          this.fail('两次密码不一致')
+          this.fail('两次密码不一致!')
         }
 
       }

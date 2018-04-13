@@ -1,5 +1,5 @@
 export default class extends think.Logic {
-  indexAction() {
+  postAction() {
     this.allowMethods = 'post'
     this.rules = {
       phone: {
