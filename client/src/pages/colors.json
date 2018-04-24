@@ -1,0 +1,574 @@
+[
+	{
+		"colorName": "AliceBlue",
+		"colorCode": "#F0F8FF"
+	},
+	{
+		"colorName": "AntiqueWhite",
+		"colorCode": "#FAEBD7"
+	},
+	{
+		"colorName": "Aqua",
+		"colorCode": "#00FFFF"
+	},
+	{
+		"colorName": "Aquamarine",
+		"colorCode": "#7FFFD4"
+	},
+	{
+		"colorName": "Azure",
+		"colorCode": "#F0FFFF"
+	},
+	{
+		"colorName": "Beige",
+		"colorCode": "#F5F5DC"
+	},
+	{
+		"colorName": "Bisque",
+		"colorCode": "#FFE4C4"
+	},
+	{
+		"colorName": "Black",
+		"colorCode": "#000000"
+	},
+	{
+		"colorName": "BlanchedAlmond",
+		"colorCode": "#FFEBCD"
+	},
+	{
+		"colorName": "Blue",
+		"colorCode": "#0000FF"
+	},
+	{
+		"colorName": "BlueViolet",
+		"colorCode": "#8A2BE2"
+	},
+	{
+		"colorName": "Brown",
+		"colorCode": "#A52A2A"
+	},
+	{
+		"colorName": "BurlyWood",
+		"colorCode": "#DEB887"
+	},
+	{
+		"colorName": "CadetBlue",
+		"colorCode": "#5F9EA0"
+	},
+	{
+		"colorName": "Chartreuse",
+		"colorCode": "#7FFF00"
+	},
+	{
+		"colorName": "Chocolate",
+		"colorCode": "#D2691E"
+	},
+	{
+		"colorName": "Coral",
+		"colorCode": "#FF7F50"
+	},
+	{
+		"colorName": "CornflowerBlue",
+		"colorCode": "#6495ED"
+	},
+	{
+		"colorName": "Cornsilk",
+		"colorCode": "#FFF8DC"
+	},
+	{
+		"colorName": "Crimson",
+		"colorCode": "#DC143C"
+	},
+	{
+		"colorName": "Cyan",
+		"colorCode": "#00FFFF"
+	},
+	{
+		"colorName": "DarkBlue",
+		"colorCode": "#00008B"
+	},
+	{
+		"colorName": "DarkCyan",
+		"colorCode": "#008B8B"
+	},
+	{
+		"colorName": "DarkGoldenRod",
+		"colorCode": "#B8860B"
+	},
+	{
+		"colorName": "DarkGray",
+		"colorCode": "#A9A9A9"
+	},
+	{
+		"colorName": "DarkGreen",
+		"colorCode": "#006400"
+	},
+	{
+		"colorName": "DarkKhaki",
+		"colorCode": "#BDB76B"
+	},
+	{
+		"colorName": "DarkMagenta",
+		"colorCode": "#8B008B"
+	},
+	{
+		"colorName": "DarkOliveGreen",
+		"colorCode": "#556B2F"
+	},
+	{
+		"colorName": "Darkorange",
+		"colorCode": "#FF8C00"
+	},
+	{
+		"colorName": "DarkOrchid",
+		"colorCode": "#9932CC"
+	},
+	{
+		"colorName": "DarkRed",
+		"colorCode": "#8B0000"
+	},
+	{
+		"colorName": "DarkSalmon",
+		"colorCode": "#E9967A"
+	},
+	{
+		"colorName": "DarkSeaGreen",
+		"colorCode": "#8FBC8F"
+	},
+	{
+		"colorName": "DarkSlateBlue",
+		"colorCode": "#483D8B"
+	},
+	{
+		"colorName": "DarkSlateGray",
+		"colorCode": "#2F4F4F"
+	},
+	{
+		"colorName": "DarkTurquoise",
+		"colorCode": "#00CED1"
+	},
+	{
+		"colorName": "DarkViolet",
+		"colorCode": "#9400D3"
+	},
+	{
+		"colorName": "DeepPink",
+		"colorCode": "#FF1493"
+	},
+	{
+		"colorName": "DeepSkyBlue",
+		"colorCode": "#00BFFF"
+	},
+	{
+		"colorName": "DimGray",
+		"colorCode": "#696969"
+	},
+	{
+		"colorName": "DodgerBlue",
+		"colorCode": "#1E90FF"
+	},
+	{
+		"colorName": "Feldspar",
+		"colorCode": "#D19275"
+	},
+	{
+		"colorName": "FireBrick",
+		"colorCode": "#B22222"
+	},
+	{
+		"colorName": "FloralWhite",
+		"colorCode": "#FFFAF0"
+	},
+	{
+		"colorName": "ForestGreen",
+		"colorCode": "#228B22"
+	},
+	{
+		"colorName": "Fuchsia",
+		"colorCode": "#FF00FF"
+	},
+	{
+		"colorName": "Gainsboro",
+		"colorCode": "#DCDCDC"
+	},
+	{
+		"colorName": "GhostWhite",
+		"colorCode": "#F8F8FF"
+	},
+	{
+		"colorName": "Gold",
+		"colorCode": "#FFD700"
+	},
+	{
+		"colorName": "GoldenRod",
+		"colorCode": "#DAA520"
+	},
+	{
+		"colorName": "Gray",
+		"colorCode": "#808080"
+	},
+	{
+		"colorName": "Green",
+		"colorCode": "#008000"
+	},
+	{
+		"colorName": "GreenYellow",
+		"colorCode": "#ADFF2F"
+	},
+	{
+		"colorName": "HoneyDew",
+		"colorCode": "#F0FFF0"
+	},
+	{
+		"colorName": "HotPink",
+		"colorCode": "#FF69B4"
+	},
+	{
+		"colorName": "IndianRed",
+		"colorCode": "#CD5C5C"
+	},
+	{
+		"colorName": "Indigo",
+		"colorCode": "#4B0082"
+	},
+	{
+		"colorName": "Ivory",
+		"colorCode": "#FFFFF0"
+	},
+	{
+		"colorName": "Khaki",
+		"colorCode": "#F0E68C"
+	},
+	{
+		"colorName": "Lavender",
+		"colorCode": "#E6E6FA"
+	},
+	{
+		"colorName": "LavenderBlush",
+		"colorCode": "#FFF0F5"
+	},
+	{
+		"colorName": "LawnGreen",
+		"colorCode": "#7CFC00"
+	},
+	{
+		"colorName": "LemonChiffon",
+		"colorCode": "#FFFACD"
+	},
+	{
+		"colorName": "LightBlue",
+		"colorCode": "#ADD8E6"
+	},
+	{
+		"colorName": "LightCoral",
+		"colorCode": "#F08080"
+	},
+	{
+		"colorName": "LightCyan",
+		"colorCode": "#E0FFFF"
+	},
+	{
+		"colorName": "LightGoldenRodYellow",
+		"colorCode": "#FAFAD2"
+	},
+	{
+		"colorName": "LightGrey",
+		"colorCode": "#D3D3D3"
+	},
+	{
+		"colorName": "LightGreen",
+		"colorCode": "#90EE90"
+	},
+	{
+		"colorName": "LightPink",
+		"colorCode": "#FFB6C1"
+	},
+	{
+		"colorName": "LightSalmon",
+		"colorCode": "#FFA07A"
+	},
+	{
+		"colorName": "LightSeaGreen",
+		"colorCode": "#20B2AA"
+	},
+	{
+		"colorName": "LightSkyBlue",
+		"colorCode": "#87CEFA"
+	},
+	{
+		"colorName": "LightSlateBlue",
+		"colorCode": "#8470FF"
+	},
+	{
+		"colorName": "LightSlateGray",
+		"colorCode": "#778899"
+	},
+	{
+		"colorName": "LightSteelBlue",
+		"colorCode": "#B0C4DE"
+	},
+	{
+		"colorName": "LightYellow",
+		"colorCode": "#FFFFE0"
+	},
+	{
+		"colorName": "Lime",
+		"colorCode": "#00FF00"
+	},
+	{
+		"colorName": "LimeGreen",
+		"colorCode": "#32CD32"
+	},
+	{
+		"colorName": "Linen",
+		"colorCode": "#FAF0E6"
+	},
+	{
+		"colorName": "Magenta",
+		"colorCode": "#FF00FF"
+	},
+	{
+		"colorName": "Maroon",
+		"colorCode": "#800000"
+	},
+	{
+		"colorName": "MediumAquaMarine",
+		"colorCode": "#66CDAA"
+	},
+	{
+		"colorName": "MediumBlue",
+		"colorCode": "#0000CD"
+	},
+	{
+		"colorName": "MediumOrchid",
+		"colorCode": "#BA55D3"
+	},
+	{
+		"colorName": "MediumPurple",
+		"colorCode": "#9370D8"
+	},
+	{
+		"colorName": "MediumSeaGreen",
+		"colorCode": "#3CB371"
+	},
+	{
+		"colorName": "MediumSlateBlue",
+		"colorCode": "#7B68EE"
+	},
+	{
+		"colorName": "MediumSpringGreen",
+		"colorCode": "#00FA9A"
+	},
+	{
+		"colorName": "MediumTurquoise",
+		"colorCode": "#48D1CC"
+	},
+	{
+		"colorName": "MediumVioletRed",
+		"colorCode": "#C71585"
+	},
+	{
+		"colorName": "MidnightBlue",
+		"colorCode": "#191970"
+	},
+	{
+		"colorName": "MintCream",
+		"colorCode": "#F5FFFA"
+	},
+	{
+		"colorName": "MistyRose",
+		"colorCode": "#FFE4E1"
+	},
+	{
+		"colorName": "Moccasin",
+		"colorCode": "#FFE4B5"
+	},
+	{
+		"colorName": "NavajoWhite",
+		"colorCode": "#FFDEAD"
+	},
+	{
+		"colorName": "Navy",
+		"colorCode": "#000080"
+	},
+	{
+		"colorName": "OldLace",
+		"colorCode": "#FDF5E6"
+	},
+	{
+		"colorName": "Olive",
+		"colorCode": "#808000"
+	},
+	{
+		"colorName": "OliveDrab",
+		"colorCode": "#6B8E23"
+	},
+	{
+		"colorName": "Orange",
+		"colorCode": "#FFA500"
+	},
+	{
+		"colorName": "OrangeRed",
+		"colorCode": "#FF4500"
+	},
+	{
+		"colorName": "Orchid",
+		"colorCode": "#DA70D6"
+	},
+	{
+		"colorName": "PaleGoldenRod",
+		"colorCode": "#EEE8AA"
+	},
+	{
+		"colorName": "PaleGreen",
+		"colorCode": "#98FB98"
+	},
+	{
+		"colorName": "PaleTurquoise",
+		"colorCode": "#AFEEEE"
+	},
+	{
+		"colorName": "PaleVioletRed",
+		"colorCode": "#D87093"
+	},
+	{
+		"colorName": "PapayaWhip",
+		"colorCode": "#FFEFD5"
+	},
+	{
+		"colorName": "PeachPuff",
+		"colorCode": "#FFDAB9"
+	},
+	{
+		"colorName": "Peru",
+		"colorCode": "#CD853F"
+	},
+	{
+		"colorName": "Pink",
+		"colorCode": "#FFC0CB"
+	},
+	{
+		"colorName": "Plum",
+		"colorCode": "#DDA0DD"
+	},
+	{
+		"colorName": "PowderBlue",
+		"colorCode": "#B0E0E6"
+	},
+	{
+		"colorName": "Purple",
+		"colorCode": "#800080"
+	},
+	{
+		"colorName": "Red",
+		"colorCode": "#FF0000"
+	},
+	{
+		"colorName": "RosyBrown",
+		"colorCode": "#BC8F8F"
+	},
+	{
+		"colorName": "RoyalBlue",
+		"colorCode": "#4169E1"
+	},
+	{
+		"colorName": "SaddleBrown",
+		"colorCode": "#8B4513"
+	},
+	{
+		"colorName": "Salmon",
+		"colorCode": "#FA8072"
+	},
+	{
+		"colorName": "SandyBrown",
+		"colorCode": "#F4A460"
+	},
+	{
+		"colorName": "SeaGreen",
+		"colorCode": "#2E8B57"
+	},
+	{
+		"colorName": "SeaShell",
+		"colorCode": "#FFF5EE"
+	},
+	{
+		"colorName": "Sienna",
+		"colorCode": "#A0522D"
+	},
+	{
+		"colorName": "Silver",
+		"colorCode": "#C0C0C0"
+	},
+	{
+		"colorName": "SkyBlue",
+		"colorCode": "#87CEEB"
+	},
+	{
+		"colorName": "SlateBlue",
+		"colorCode": "#6A5ACD"
+	},
+	{
+		"colorName": "SlateGray",
+		"colorCode": "#708090"
+	},
+	{
+		"colorName": "Snow",
+		"colorCode": "#FFFAFA"
+	},
+	{
+		"colorName": "SpringGreen",
+		"colorCode": "#00FF7F"
+	},
+	{
+		"colorName": "SteelBlue",
+		"colorCode": "#4682B4"
+	},
+	{
+		"colorName": "Tan",
+		"colorCode": "#D2B48C"
+	},
+	{
+		"colorName": "Teal",
+		"colorCode": "#008080"
+	},
+	{
+		"colorName": "Thistle",
+		"colorCode": "#D8BFD8"
+	},
+	{
+		"colorName": "Tomato",
+		"colorCode": "#FF6347"
+	},
+	{
+		"colorName": "Turquoise",
+		"colorCode": "#40E0D0"
+	},
+	{
+		"colorName": "Violet",
+		"colorCode": "#EE82EE"
+	},
+	{
+		"colorName": "VioletRed",
+		"colorCode": "#D02090"
+	},
+	{
+		"colorName": "Wheat",
+		"colorCode": "#F5DEB3"
+	},
+	{
+		"colorName": "White",
+		"colorCode": "#FFFFFF"
+	},
+	{
+		"colorName": "WhiteSmoke",
+		"colorCode": "#F5F5F5"
+	},
+	{
+		"colorName": "Yellow",
+		"colorCode": "#FFFF00"
+	},
+	{
+		"colorName": "YellowGreen",
+		"colorCode": "#9ACD32"
+	}
+]

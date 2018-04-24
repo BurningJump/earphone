@@ -59,7 +59,7 @@ export default {
       context.strokeStyle = '#000'
 
       // 原点(120, 100)
-     /*  for (let i = 0; i < 15; i++) {
+      /* for (let i = 0; i < 15; i++) {
         context.moveTo(120 + 80 * i, 100)
         context.lineTo(120 + 80 * i, 740)
         context.stroke()
