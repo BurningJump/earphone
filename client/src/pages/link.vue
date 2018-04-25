@@ -146,7 +146,9 @@ export default {
       * 随机摆放图片：
       * 1.先把每一级的所有图片摆放2次，共占用 level.length*2 格
       * 2.剩下14*8-level.length*2格，循环(14*8-level.length*2)/2次，每次随机抽取一张图片，摆放2格
+      * 3.用数组记录图片名称或路径，以便后续判断两张图片是否相同
       */
+      const imgArr = []
       levelOne.forEach((element, index) => {
         const img = new Image()
         img.src = require('../assets/images/' + element + '.png')
@@ -155,10 +157,12 @@ export default {
         const y1 = coordinate[index1][0]
         const x1 = coordinate[index1][1]
         coordinate.splice(index1, 1)
+        imgArr.push([x1, y1, element])
         const index2 = Math.floor(Math.random() * coordinate.length)
         const y2 = coordinate[index2][0]
         const x2 = coordinate[index2][1]
         coordinate.splice(index2, 1)
+        imgArr.push([x2, y2, element])
         img.onload = function() {
           context.drawImage(img, 125 + 80 * x1, 105 + 80 * y1, 70, 70)
           context.drawImage(img, 125 + 80 * x2, 105 + 80 * y2, 70, 70)
@@ -170,15 +174,55 @@ export default {
         const y3 = coordinate[index3][0]
         const x3 = coordinate[index3][1]
         coordinate.splice(index3, 1)
+        imgArr.push([x3, y3, levelOne[levelIndex]])
         const index4 = Math.floor(Math.random() * coordinate.length)
         const y4 = coordinate[index4][0]
         const x4 = coordinate[index4][1]
         coordinate.splice(index4, 1)
+        imgArr.push([x4, y4, levelOne[levelIndex]])
         const img = new Image()
         img.src = require('../assets/images/' + levelOne[levelIndex] + '.png')
         img.onload = function() {
           context.drawImage(img, 125 + 80 * x3, 105 + 80 * y3, 70, 70)
           context.drawImage(img, 125 + 80 * x4, 105 + 80 * y4, 70, 70)
+        }
+      }
+      console.log(imgArr, '////////////////')
+
+      /*
+      * 鼠标点击事件
+      * 用数组记录两次点击的坐标
+      */
+      let clickArr = []
+      canvas.onclick = function(e) {
+        if (clickArr.length === 2) {
+          clickArr.shift()
+        }
+        var location = getLocation(e.clientX, e.clientY)
+        console.log(location.x, location.y)
+        if (location.x < 125 || location.x > 1235 || location.y < 105 || location.y > 735) {
+          clickArr = []
+        }
+        const x = Math.floor((location.x - 125) / 80)
+        const y = Math.floor((location.y - 105) / 80)
+        clickArr.push([x, y])
+        if (clickArr.length === 2) {
+          // imgArr 为乱序
+          console.log(clickArr)
+          // 2018.04.26 01:20 接下来判断两次点击的图片颜色名称是否相同
+        }
+      }
+      function getLocation(x, y) {
+        var bbox = canvas.getBoundingClientRect()
+        return {
+          x: (x - bbox.left) * (canvas.width / bbox.width),
+          y: (y - bbox.top) * (canvas.height / bbox.height)
+          /*
+          * 此处不用下面两行是为了防止使用CSS和JS改变了canvas的高宽之后是表面积拉大而实际
+          * 显示像素不变而造成的坐标获取不准的情况
+          x: (x - bbox.left),
+          y: (y - bbox.top)
+          */
         }
       }
       /*
