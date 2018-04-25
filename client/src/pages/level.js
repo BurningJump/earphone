@@ -1,11 +1,11 @@
-{
-  one: [
+/* {
+  [
     'AliceBlue',
     'AntiqueWhite',
     'Aqua',
     'Aquamarine'
-  ];
-  two: [
+  ],
+  [
     'AliceBlue',
     'AntiqueWhite',
     'Aqua',
@@ -16,3 +16,4 @@
     'Black'
   ]
 }
+*/

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import colors from './colors.json'
+// import colors from './colors.json'
 import level from './level.js'
 // import colors from './colorData.json'
 export default {

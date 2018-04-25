@@ -19,9 +19,11 @@
   </div>
 </template>
 <script>
+// import level from './level.js'
 export default {
   data() {
     return {
+      imgUrl: ''
     }
   },
   mounted() {
@@ -87,8 +89,98 @@ export default {
       context.fillText('提示', 1250, 800)
 
       // 绘制图片
-      // context.drawImage('../assets/images/AliceBlue.png', 10, 10, 70, 70)
-
+      const levelOne = [
+        'AliceBlue',
+        'AntiqueWhite',
+        'Aqua',
+        'Aquamarine',
+        'Azure',
+        'Beige',
+        'Bisque',
+        'Black',
+        'BlanchedAlmond',
+        'Blue',
+        'BlueViolet',
+        'Brown',
+        'BurlyWood',
+        'CadetBlue',
+        'Chartreuse',
+        'Chocolate',
+        'Coral',
+        'CornflowerBlue',
+        'Cornsilk',
+        'Crimson',
+        'Cyan',
+        'DarkBlue',
+        'DarkCyan',
+        'DarkGoldenRod',
+        'DarkGray',
+        'DarkGreen',
+        'DarkKhaki',
+        'DarkMagenta',
+        'DarkOliveGreen',
+        'Darkorange'
+      ]
+      const levelTwo = [
+        'AliceBlue',
+        'AntiqueWhite',
+        'Aqua',
+        'Aquamarine',
+        'Azure',
+        'Beige',
+        'Bisque',
+        'Black'
+      ]
+      // 格子坐标
+      const coordinate = [
+        [0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8], [0, 9], [0, 10], [0, 11], [0, 12], [0, 13],
+        [1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10], [1, 11], [1, 12], [1, 13],
+        [2, 0], [2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9], [2, 10], [2, 11], [2, 12], [2, 13],
+        [3, 0], [3, 1], [3, 2], [3, 3], [3, 4], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9], [3, 10], [3, 11], [3, 12], [3, 13],
+        [4, 0], [4, 1], [4, 2], [4, 3], [4, 4], [4, 5], [4, 6], [4, 7], [4, 8], [4, 9], [4, 10], [4, 11], [4, 12], [4, 13],
+        [5, 0], [5, 1], [5, 2], [5, 3], [5, 4], [5, 5], [5, 6], [5, 7], [5, 8], [5, 9], [5, 10], [5, 11], [5, 12], [5, 13],
+        [6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [6, 7], [6, 8], [6, 9], [6, 10], [6, 11], [6, 12], [6, 13],
+        [7, 0], [7, 1], [7, 2], [7, 3], [7, 4], [7, 5], [7, 6], [7, 7], [7, 8], [7, 9], [7, 10], [7, 11], [7, 12], [7, 13]
+      ]
+      /*
+      * 随机摆放图片：
+      * 1.先把每一级的所有图片摆放2次，共占用 level.length*2 格
+      * 2.剩下14*8-level.length*2格，循环(14*8-level.length*2)/2次，每次随机抽取一张图片，摆放2格
+      */
+      levelOne.forEach((element, index) => {
+        const img = new Image()
+        img.src = require('../assets/images/' + element + '.png')
+        // 随机抽两个格子
+        const index1 = Math.floor(Math.random() * coordinate.length)
+        const y1 = coordinate[index1][0]
+        const x1 = coordinate[index1][1]
+        coordinate.splice(index1, 1)
+        const index2 = Math.floor(Math.random() * coordinate.length)
+        const y2 = coordinate[index2][0]
+        const x2 = coordinate[index2][1]
+        coordinate.splice(index2, 1)
+        img.onload = function() {
+          context.drawImage(img, 125 + 80 * x1, 105 + 80 * y1, 70, 70)
+          context.drawImage(img, 125 + 80 * x2, 105 + 80 * y2, 70, 70)
+        }
+      })
+      for (let i = 0, len = coordinate.length, num = len / 2; i < num; i++) {
+        const levelIndex = Math.floor(Math.random() * levelOne.length)
+        const index3 = Math.floor(Math.random() * coordinate.length)
+        const y3 = coordinate[index3][0]
+        const x3 = coordinate[index3][1]
+        coordinate.splice(index3, 1)
+        const index4 = Math.floor(Math.random() * coordinate.length)
+        const y4 = coordinate[index4][0]
+        const x4 = coordinate[index4][1]
+        coordinate.splice(index4, 1)
+        const img = new Image()
+        img.src = require('../assets/images/' + levelOne[levelIndex] + '.png')
+        img.onload = function() {
+          context.drawImage(img, 125 + 80 * x3, 105 + 80 * y3, 70, 70)
+          context.drawImage(img, 125 + 80 * x4, 105 + 80 * y4, 70, 70)
+        }
+      }
       /*
       * 判断可连接情况：
       * 1.只有内容相同的图片才有消除的可能
