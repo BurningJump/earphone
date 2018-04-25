@@ -86,6 +86,9 @@ export default {
       context.fillText(tips, 1100, 800)
       context.fillText('提示', 1250, 800)
 
+      // 绘制图片
+      // context.drawImage('../assets/images/AliceBlue.png', 10, 10, 70, 70)
+
       /*
       * 判断可连接情况：
       * 1.只有内容相同的图片才有消除的可能
