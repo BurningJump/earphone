@@ -121,7 +121,7 @@ export default {
         'DarkOliveGreen',
         'Darkorange'
       ]
-      const levelTwo = [
+      /* const levelTwo = [
         'AliceBlue',
         'AntiqueWhite',
         'Aqua',
@@ -130,17 +130,17 @@ export default {
         'Beige',
         'Bisque',
         'Black'
-      ]
+      ] */
       // 格子坐标
       const coordinate = [
-        [0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8], [0, 9], [0, 10], [0, 11], [0, 12], [0, 13],
-        [1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10], [1, 11], [1, 12], [1, 13],
-        [2, 0], [2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9], [2, 10], [2, 11], [2, 12], [2, 13],
-        [3, 0], [3, 1], [3, 2], [3, 3], [3, 4], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9], [3, 10], [3, 11], [3, 12], [3, 13],
-        [4, 0], [4, 1], [4, 2], [4, 3], [4, 4], [4, 5], [4, 6], [4, 7], [4, 8], [4, 9], [4, 10], [4, 11], [4, 12], [4, 13],
-        [5, 0], [5, 1], [5, 2], [5, 3], [5, 4], [5, 5], [5, 6], [5, 7], [5, 8], [5, 9], [5, 10], [5, 11], [5, 12], [5, 13],
-        [6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [6, 7], [6, 8], [6, 9], [6, 10], [6, 11], [6, 12], [6, 13],
-        [7, 0], [7, 1], [7, 2], [7, 3], [7, 4], [7, 5], [7, 6], [7, 7], [7, 8], [7, 9], [7, 10], [7, 11], [7, 12], [7, 13]
+        [0, 0],	[1, 0],	[2, 0],	[3, 0],	[4, 0],	[5, 0],	[6, 0],	[7, 0],	[8, 0],	[9, 0],	[10, 0], [11, 0], [12, 0], [13, 0],
+        [0, 1],	[1, 1],	[2, 1],	[3, 1],	[4, 1],	[5, 1],	[6, 1],	[7, 1],	[8, 1],	[9, 1],	[10, 1], [11, 1], [12, 1], [13, 1],
+        [0, 2],	[1, 2],	[2, 2],	[3, 2],	[4, 2],	[5, 2],	[6, 2],	[7, 2],	[8, 2],	[9, 2],	[10, 2], [11, 2], [12, 2], [13, 2],
+        [0, 3],	[1, 3],	[2, 3],	[3, 3],	[4, 3],	[5, 3],	[6, 3],	[7, 3],	[8, 3],	[9, 3],	[10, 3], [11, 3], [12, 3], [13, 3],
+        [0, 4],	[1, 4],	[2, 4],	[3, 4],	[4, 4],	[5, 4],	[6, 4],	[7, 4],	[8, 4],	[9, 4],	[10, 4], [11, 4], [12, 4], [13, 4],
+        [0, 5],	[1, 5],	[2, 5],	[3, 5],	[4, 5],	[5, 5],	[6, 5],	[7, 5],	[8, 5],	[9, 5],	[10, 5], [11, 5], [12, 5], [13, 5],
+        [0, 6],	[1, 6],	[2, 6],	[3, 6],	[4, 6],	[5, 6],	[6, 6],	[7, 6],	[8, 6],	[9, 6],	[10, 6], [11, 6], [12, 6], [13, 6],
+        [0, 7],	[1, 7],	[2, 7],	[3, 7],	[4, 7],	[5, 7],	[6, 7],	[7, 7],	[8, 7],	[9, 7],	[10, 7], [11, 7], [12, 7], [13, 7]
       ]
       /*
       * 随机摆放图片：
@@ -154,13 +154,13 @@ export default {
         img.src = require('../assets/images/' + element + '.png')
         // 随机抽两个格子
         const index1 = Math.floor(Math.random() * coordinate.length)
-        const y1 = coordinate[index1][0]
-        const x1 = coordinate[index1][1]
+        const x1 = coordinate[index1][0]
+        const y1 = coordinate[index1][1]
         coordinate.splice(index1, 1)
         imgArr.push([x1, y1, element])
         const index2 = Math.floor(Math.random() * coordinate.length)
-        const y2 = coordinate[index2][0]
-        const x2 = coordinate[index2][1]
+        const x2 = coordinate[index2][0]
+        const y2 = coordinate[index2][1]
         coordinate.splice(index2, 1)
         imgArr.push([x2, y2, element])
         img.onload = function() {
@@ -171,13 +171,13 @@ export default {
       for (let i = 0, len = coordinate.length, num = len / 2; i < num; i++) {
         const levelIndex = Math.floor(Math.random() * levelOne.length)
         const index3 = Math.floor(Math.random() * coordinate.length)
-        const y3 = coordinate[index3][0]
-        const x3 = coordinate[index3][1]
+        const x3 = coordinate[index3][0]
+        const y3 = coordinate[index3][1]
         coordinate.splice(index3, 1)
         imgArr.push([x3, y3, levelOne[levelIndex]])
         const index4 = Math.floor(Math.random() * coordinate.length)
-        const y4 = coordinate[index4][0]
-        const x4 = coordinate[index4][1]
+        const x4 = coordinate[index4][0]
+        const y4 = coordinate[index4][1]
         coordinate.splice(index4, 1)
         imgArr.push([x4, y4, levelOne[levelIndex]])
         const img = new Image()
@@ -187,11 +187,14 @@ export default {
           context.drawImage(img, 125 + 80 * x4, 105 + 80 * y4, 70, 70)
         }
       }
+      imgArr.sort(function(x, y) {
+        return x[0] - y[0]
+      })
       console.log(imgArr, '////////////////')
 
       /*
       * 鼠标点击事件
-      * 用数组记录两次点击的坐标
+      * 用数组记录两次点击的坐标，存储选中的图片信息
       */
       let clickArr = []
       canvas.onclick = function(e) {
@@ -207,9 +210,34 @@ export default {
         const y = Math.floor((location.y - 105) / 80)
         clickArr.push([x, y])
         if (clickArr.length === 2) {
+          // 如果两次点击同一位置的图片，则只保留一次坐标
+          if (clickArr[0][0] === clickArr[1][0] && clickArr[0][1] === clickArr[1][1]) {
+            clickArr.shift()
+          }
           // imgArr 为乱序
           console.log(clickArr)
           // 2018.04.26 01:20 接下来判断两次点击的图片颜色名称是否相同
+          let imgSelected1 = []
+          let imgSelected2 = []
+          imgArr.forEach(element => {
+            if (element[0] === clickArr[0][0] && element[1] === clickArr[0][1]) {
+              imgSelected1 = [...element]
+            }
+            if (element[0] === clickArr[1][0] && element[1] === clickArr[1][1]) {
+              imgSelected2 = [...element]
+            }
+          })
+          // 两次点击的图片相同
+          if (imgSelected1[2] === imgSelected2[2]) {
+            console.log('相同图片')
+            // 位置相邻：上下相邻、左右相邻
+            if (Math.abs(imgSelected1[0] - imgSelected2[0]) === 1 && imgSelected1[1] === imgSelected2[1]) {
+              console.log('左右相邻')
+            }
+            if (Math.abs(imgSelected1[1] - imgSelected2[1]) === 1 && imgSelected1[0] === imgSelected2[0]) {
+              console.log('上下相邻')
+            }
+          }
         }
       }
       function getLocation(x, y) {
@@ -246,7 +274,7 @@ div#link-game {
   height: 1200px;
     canvas {
       width: 1360px;
-      height: 1000px;
+      height: 850px;
     }
 }
 </style>
