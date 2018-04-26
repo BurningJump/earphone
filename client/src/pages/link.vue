@@ -14,7 +14,7 @@
       <span>放大</span>
       <span>缩小</span>
       <span>大屏</span>
-      <span>全屏</span>
+      <span @click="fullScreen">全屏</span>
     </div>
   </div>
 </template>
@@ -23,7 +23,11 @@
 export default {
   data() {
     return {
-      imgUrl: ''
+      imgUrl: '',
+      time: 180,
+      tips: 6,
+      score: 0,
+      level: 1
     }
   },
   mounted() {
@@ -34,8 +38,16 @@ export default {
       const WIDTH = 1360
       const HEIGHT = 1000
       const level = 1
-      const score = 0
-      const tips = 6
+
+      // 每一级180秒
+      const countDown = setInterval(function() {
+        this.time--
+      }, 1000)
+      if (this.time <= 0) {
+        clearInterval(countDown)
+        console.log('game over!')
+        this.time = 180
+      }
       // const width = 1120
       // const height = 800
       const canvas = document.getElementById('canvas')
@@ -56,7 +68,7 @@ export default {
       context.fillStyle = '#fff'
       context.fillText('级别' + level, 100, 50)
       context.fillText('时间', 250, 50)
-      context.fillText('积分：' + score, 1050, 50)
+      context.fillText('积分：' + this.score, 1050, 50)
 
       context.strokeStyle = '#000'
 
@@ -85,7 +97,7 @@ export default {
       // context.fillRect(50, 800, 100, 50)
       context.fillText('暂停', 100, 800)
       context.fillText('提示数', 1000, 800)
-      context.fillText(tips, 1100, 800)
+      context.fillText(this.tips, 1100, 800)
       context.fillText('提示', 1250, 800)
 
       // 绘制图片
@@ -260,6 +272,37 @@ export default {
       * 3.两张图片连接时所经过的路径（连接路径）不能超过两个拐点
       * 4.连接路径经过的单元格所包含的图片必须已经消除
       */
+    },
+    fullScreen() {
+      const docElm = document.documentElement
+      if (docElm.requestFullscreen) {
+        // W3C
+        docElm.requestFullscreen()
+      } else if (docElm.mozRequestFullScreen) {
+        // FireFox
+        docElm.mozRequestFullScreen()
+      } else if (docElm.webkitRequestFullScreen) {
+        // Chrome等
+        docElm.webkitRequestFullScreen()
+      } else if (docElm.msRequestFullscreen) {
+        // IE11
+        docElm.msRequestFullscreen()
+      }
+
+      // 退出全屏：
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen()
+      } else if (document.webkitCancelFullScreen) {
+        document.webkitCancelFullScreen()
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen()
+      }
+    },
+    showTip() {
+      if (this.tips === 0) return
+      this.tips--
     }
   }
 }
