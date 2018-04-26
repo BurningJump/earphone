@@ -35,18 +35,19 @@ export default {
   },
   methods: {
     drawBoard() {
+      const self = this
       const WIDTH = 1360
       const HEIGHT = 1000
       const level = 1
 
       // 每一级180秒
       const countDown = setInterval(function() {
-        this.time--
+        self.time--
       }, 1000)
-      if (this.time <= 0) {
+      if (self.time <= 0) {
         clearInterval(countDown)
         console.log('game over!')
-        this.time = 180
+        self.time = 180
       }
       // const width = 1120
       // const height = 800
@@ -68,7 +69,7 @@ export default {
       context.fillStyle = '#fff'
       context.fillText('级别' + level, 100, 50)
       context.fillText('时间', 250, 50)
-      context.fillText('积分：' + this.score, 1050, 50)
+      context.fillText('积分：' + self.score, 1050, 50)
 
       context.strokeStyle = '#000'
 
@@ -97,14 +98,14 @@ export default {
       // context.fillRect(50, 800, 100, 50)
       context.fillText('暂停', 100, 800)
       context.fillText('提示数', 1000, 800)
-      context.fillText(this.tips, 1100, 800)
+      context.fillText(self.tips, 1100, 800)
       context.fillText('提示', 1250, 800)
 
       // 绘制图片
       const levelOne = [
         'AliceBlue',
-        'AntiqueWhite',
-        'Aqua',
+        'Plum',
+        'MidnightBlue',
         'Aquamarine',
         'Azure',
         'Beige',
@@ -112,7 +113,7 @@ export default {
         'Black',
         'BlanchedAlmond',
         'Blue',
-        'BlueViolet',
+        'Gold',
         'Brown',
         'BurlyWood',
         'CadetBlue',
@@ -207,6 +208,7 @@ export default {
       /*
       * 鼠标点击事件
       * 用数组记录两次点击的坐标，存储选中的图片信息
+      * 如果两张图片不一样，则保留最后一次点击的图片坐标
       */
       let clickArr = []
       canvas.onclick = function(e) {
@@ -217,6 +219,15 @@ export default {
         console.log(location.x, location.y)
         if (location.x < 125 || location.x > 1235 || location.y < 105 || location.y > 735) {
           clickArr = []
+        }
+        // 提示
+        if (location.x > 1250 && location.x < 1300 && location.y < 800 && location.y > 780) {
+          if (self.tips === 0) return
+          self.tips--
+          context.clearRect(1100, 770, 20, 40)
+          context.fillStyle = '#000'
+          context.fillText(self.tips, 1100, 800)
+          console.log('提示')
         }
         const x = Math.floor((location.x - 125) / 80)
         const y = Math.floor((location.y - 105) / 80)
@@ -231,12 +242,14 @@ export default {
           // 2018.04.26 01:20 接下来判断两次点击的图片颜色名称是否相同
           let imgSelected1 = []
           let imgSelected2 = []
-          imgArr.forEach(element => {
+          imgArr.forEach((element, index) => {
             if (element[0] === clickArr[0][0] && element[1] === clickArr[0][1]) {
               imgSelected1 = [...element]
+              imgArr.splice(index, 1)
             }
             if (element[0] === clickArr[1][0] && element[1] === clickArr[1][1]) {
               imgSelected2 = [...element]
+              imgArr.splice(index, 1)
             }
           })
           // 两次点击的图片相同
@@ -245,10 +258,18 @@ export default {
             // 位置相邻：上下相邻、左右相邻
             if (Math.abs(imgSelected1[0] - imgSelected2[0]) === 1 && imgSelected1[1] === imgSelected2[1]) {
               console.log('左右相邻')
+              clickArr = []
             }
             if (Math.abs(imgSelected1[1] - imgSelected2[1]) === 1 && imgSelected1[0] === imgSelected2[0]) {
               console.log('上下相邻')
+              clickArr = []
             }
+            context.fillStyle = 'rgb(179, 225, 240)'
+            context.fillRect(125 + 80 * imgSelected1[0], 105 + 80 * imgSelected1[1], 70, 70)
+            context.fillRect(125 + 80 * imgSelected2[0], 105 + 80 * imgSelected2[1], 70, 70)
+            console.log(imgArr)
+
+            // 直线相连
           }
         }
       }
