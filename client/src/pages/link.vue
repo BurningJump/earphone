@@ -5,16 +5,27 @@
       <span class="head-btn">
         <button>声音</button>
         <button>换肤</button>
-        <button>关灯</button>
+        <button @click="switchLight">关灯</button>
       </span>
     </div>
-    <canvas id="canvas" width="1360" height="850"></canvas>
+    <div class="time-line">
+      <span class="level">级别 {{level}}</span>
+      <span>时间</span>
+      <p class="time-outbox"><span id="time"></span></p>
+      <span id="score">积分：{{score}}</span>
+    </div>
+    <canvas id="canvas" width="1120" height="640"></canvas>
+    <div class="control">
+      <button class="pause" @click="pause">暂停</button>
+      <span id="tips-num">提示数 {{tips}}</span>
+      <button class="tips" @click="showTip">提示</button>
+    </div>
     <div class="footer">
-      <span>重玩</span>
-      <span>放大</span>
-      <span>缩小</span>
-      <span>大屏</span>
-      <span @click="fullScreen">全屏</span>
+      <button>重玩</button>
+      <button>放大</button>
+      <button>缩小</button>
+      <button>大屏</button>
+      <button @click="fullScreen">全屏</button>
     </div>
   </div>
 </template>
@@ -27,18 +38,35 @@ export default {
       time: 180,
       tips: 6,
       score: 0,
-      level: 1
+      level: 1,
+      paused: false
     }
   },
   mounted() {
     this.drawBoard()
   },
   methods: {
+    switchLight() {
+      const app = document.getElementById('app')
+      if (app.style.backgroundColor === 'black') {
+        app.style.backgroundColor = 'white'
+        app.style.color = 'black'
+      } else {
+        app.style.backgroundColor = 'black'
+        app.style.color = 'white'
+      }
+    },
+    pause() {
+      if (this.paused) {
+        // play
+      } else {
+        // pause
+      }
+    },
     drawBoard() {
       const self = this
-      const WIDTH = 1360
-      const HEIGHT = 1000
-      const level = 1
+      // const WIDTH = 1120
+      // const HEIGHT = 640
 
       // 每一级180秒
       const countDown = setInterval(function() {
@@ -55,25 +83,22 @@ export default {
       const context = canvas.getContext('2d')
 
       context.save()
-      // 大矩形
+      /* // 大矩形
       context.fillStyle = 'rgb(0, 207, 255)'
       context.fillRect(0, 0, WIDTH, HEIGHT)
-      context.restore()
+      context.restore() */
 
-      // 小矩形
+      // canvas区域
       context.fillStyle = 'rgb(179, 225, 240)'
-      context.fillRect(120, 100, 1120, 640)
+      context.fillRect(0, 0, 1120, 640)
 
       // 级别时间积分
       context.font = '26px Georgia'
       context.fillStyle = '#fff'
-      context.fillText('级别' + level, 100, 50)
-      context.fillText('时间', 250, 50)
-      context.fillText('积分：' + self.score, 1050, 50)
 
       context.strokeStyle = '#000'
 
-      // 原点(120, 100)
+      // 原点(0, 0)
       /* for (let i = 0; i < 15; i++) {
         context.moveTo(120 + 80 * i, 100)
         context.lineTo(120 + 80 * i, 740)
@@ -89,17 +114,9 @@ export default {
       // 70*70 小图片矩形
       for (let k = 0; k < 14; k++) {
         for (let m = 0; m < 8; m++) {
-          context.strokeRect(125 + 80 * k, 105 + 80 * m, 70, 70)
+          context.strokeRect(5 + 80 * k, 5 + 80 * m, 70, 70)
         }
       }
-
-      // 按钮矩形
-      // context.fillStyle = 'green'
-      // context.fillRect(50, 800, 100, 50)
-      context.fillText('暂停', 100, 800)
-      context.fillText('提示数', 1000, 800)
-      context.fillText(self.tips, 1100, 800)
-      context.fillText('提示', 1250, 800)
 
       // 绘制图片
       const levelOne = [
@@ -177,8 +194,8 @@ export default {
         coordinate.splice(index2, 1)
         imgArr.push([x2, y2, element])
         img.onload = function() {
-          context.drawImage(img, 125 + 80 * x1, 105 + 80 * y1, 70, 70)
-          context.drawImage(img, 125 + 80 * x2, 105 + 80 * y2, 70, 70)
+          context.drawImage(img, 5 + 80 * x1, 5 + 80 * y1, 70, 70)
+          context.drawImage(img, 5 + 80 * x2, 5 + 80 * y2, 70, 70)
         }
       })
       for (let i = 0, len = coordinate.length, num = len / 2; i < num; i++) {
@@ -196,14 +213,14 @@ export default {
         const img = new Image()
         img.src = require('../assets/images/' + levelOne[levelIndex] + '.png')
         img.onload = function() {
-          context.drawImage(img, 125 + 80 * x3, 105 + 80 * y3, 70, 70)
-          context.drawImage(img, 125 + 80 * x4, 105 + 80 * y4, 70, 70)
+          context.drawImage(img, 5 + 80 * x3, 5 + 80 * y3, 70, 70)
+          context.drawImage(img, 5 + 80 * x4, 5 + 80 * y4, 70, 70)
         }
       }
       imgArr.sort(function(x, y) {
         return x[0] - y[0]
       })
-      console.log(imgArr, '////////////////')
+      console.log(imgArr)
 
       /*
       * 鼠标点击事件
@@ -217,20 +234,12 @@ export default {
         }
         var location = getLocation(e.clientX, e.clientY)
         console.log(location.x, location.y)
-        if (location.x < 125 || location.x > 1235 || location.y < 105 || location.y > 735) {
+        if (location.x < 5 || location.x > 1115 || location.y < 5 || location.y > 635) {
           clickArr = []
         }
-        // 提示
-        if (location.x > 1250 && location.x < 1300 && location.y < 800 && location.y > 780) {
-          if (self.tips === 0) return
-          self.tips--
-          context.clearRect(1100, 770, 20, 40)
-          context.fillStyle = '#000'
-          context.fillText(self.tips, 1100, 800)
-          console.log('提示')
-        }
-        const x = Math.floor((location.x - 125) / 80)
-        const y = Math.floor((location.y - 105) / 80)
+
+        const x = Math.floor((location.x - 5) / 80)
+        const y = Math.floor((location.y - 5) / 80)
         clickArr.push([x, y])
         if (clickArr.length === 2) {
           // 如果两次点击同一位置的图片，则只保留一次坐标
@@ -265,8 +274,8 @@ export default {
               clickArr = []
             }
             context.fillStyle = 'rgb(179, 225, 240)'
-            context.fillRect(125 + 80 * imgSelected1[0], 105 + 80 * imgSelected1[1], 70, 70)
-            context.fillRect(125 + 80 * imgSelected2[0], 105 + 80 * imgSelected2[1], 70, 70)
+            context.fillRect(5 + 80 * imgSelected1[0], 5 + 80 * imgSelected1[1], 70, 70)
+            context.fillRect(5 + 80 * imgSelected2[0], 5 + 80 * imgSelected2[1], 70, 70)
             console.log(imgArr)
 
             // 直线相连
@@ -334,11 +343,29 @@ div#link-game {
   justify-content: center;
   align-content: center;
   align-items: center; */
+  div.time-line {
+    p.time-outbox {
+      position: relative;
+      display: inline-block;
+      width: 640px;
+      height: 20px;
+      margin: 0;
+      border: 1px solid #ccc;
+      span#time {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 320px;
+        height: 100%;
+        background-color: yellowgreen;
+      }
+    }
+  }
   width: 1400px;
   height: 1200px;
     canvas {
-      width: 1360px;
-      height: 850px;
+      width: 1120px;
+      height: 640px;
     }
 }
 </style>
