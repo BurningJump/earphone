@@ -223,7 +223,8 @@ export default {
       console.log(imgArr)
 
       // 判断两点之间是否为空，point = [x, y]
-      function isEmpty(point1, point2) {
+      function isEmptyLine(point1, point2) {
+        let isEmpty = true
         let min
         let max
         let points
@@ -235,7 +236,7 @@ export default {
           for (let i = 1; i < points; i++) {
             imgArr.forEach(element => {
               if (element[0] === point1[0] && element[1] === min + i) {
-                return false
+                isEmpty = false
               }
             })
           }
@@ -247,11 +248,54 @@ export default {
           for (let i = 1; i < points; i++) {
             imgArr.forEach(element => {
               if (element[1] === point1[1] && element[0] === min + i) {
-                return false
+                isEmpty = false
               }
             })
           }
         }
+        return isEmpty
+      }
+
+      // 判断能否一折连接
+      function oneAngleLink(point1, point2) {
+        if (isEmptyLine(point1, point2)) return false
+        const point3 = [point1[0], point[1]]
+        const point4 = [point1[1], point[0]]
+        if (isEmptyLine(point1, point3) && isEmptyLine(point2, point3)) {
+          return true
+        } else if (isEmptyLine(point1, point4) && isEmptyLine(point2, point4)) {
+          return true
+        } else {
+          return false
+        }
+      }
+
+      // 判断能否两折连接，可以转化为判断能否找到一个C单元格，该C单元格可以与A单元格0折连接，
+      // 且C与B可以1折连接。若能找到这样一个C单元格，那么A与B就可以2折连接
+      function doubleAngleLink(point1, point2) {
+        if (isEmptyLine(point1, point2) || oneAngleLink(point1, point2)) return false
+        let commonPoint = []
+        // 从A点向右扫描
+        for (let i = 1; i < 15 - point1[0]; i++) {
+          commonPoint = [point1[0] + i, point1[1]]
+          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return true
+        }
+        // 从A点向左扫描
+        for (let i = 1; i < 1 + point1[0]; i++) {
+          commonPoint = [point1[0] - i, point1[1]]
+          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return true
+        }
+        // 从A点向下扫描
+        for (let i = 1; i < 9 - point1[0]; i++) {
+          commonPoint = [point1[0], point1[1] + i]
+          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return true
+        }
+        // 从A点向上扫描
+        for (let i = 1; i < 1 + point1[0]; i++) {
+          commonPoint = [point1[0], point1[1] - i]
+          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return true
+        }
+        return false
       }
 
       /*
@@ -303,10 +347,10 @@ export default {
               if (imgSelected1[0] === imgSelected2[0]) {
                 // 同一列
                 // 如果格子不为空
-                if (!isEmpty(imgSelected1, imgSelected2)) return
+                if (!isEmptyLine(imgSelected1, imgSelected2)) return
               } else if (imgSelected1[1] === imgSelected2[1]) {
                 // 同一行
-                if (!isEmpty(imgSelected1, imgSelected2)) return
+                if (!isEmptyLine(imgSelected1, imgSelected2)) return
               }
               // 其中一个格子周围(8个格子)都不为空，则不能消除
             }
