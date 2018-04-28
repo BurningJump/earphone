@@ -3,7 +3,7 @@ import sha1 from "sha1";
 
 export default class extends Base {
   // 用户注册
-  async postAction() {
+  async indexAction() {
     try {
       const acc = this.post('phone'),
         pwd = this.post('pwd'),

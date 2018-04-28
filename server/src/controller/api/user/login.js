@@ -6,8 +6,8 @@ export default class extends Base {
   // 用户登录
   async indexAction() {
     try {
-      const acc = this.get('phone'),
-        pwd = this.get('pwd')
+      const acc = this.post('phone'),
+        pwd = this.post('pwd')
 
       let data = await this.model('USER').varifyUser({
         acc: acc,
