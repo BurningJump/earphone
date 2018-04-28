@@ -69,19 +69,18 @@ export default {
       // const HEIGHT = 640
 
       // 每一级180秒
-      const countDown = setInterval(function() {
-        self.time--
-      }, 1000)
-      if (self.time <= 0) {
-        clearInterval(countDown)
-        console.log('game over!')
-        self.time = 180
-      }
+      // const countDown = setInterval(function() {
+      //   self.time--
+      // }, 1000)
+      // if (self.time <= 0) {
+      //   clearInterval(countDown)
+      //   console.log('game over!')
+      //   self.time = 180
+      // }
       // const width = 1120
       // const height = 800
       const canvas = document.getElementById('canvas')
       const context = canvas.getContext('2d')
-
       context.save()
       /* // 大矩形
       context.fillStyle = 'rgb(0, 207, 255)'
@@ -229,6 +228,9 @@ export default {
         let max
         let points
         if (point1[0] === point2[0]) {
+          console.log('两点同列231')
+          // 上下相邻
+          if (Math.abs(point1[1] - point2[1]) === 1) return isEmpty = true
           // 同一列
           min = point1[1] < point2[1] ? point1[1] : point2[1]
           max = point1[1] > point2[1] ? point1[1] : point2[1]
@@ -236,11 +238,14 @@ export default {
           for (let i = 1; i < points; i++) {
             imgArr.forEach(element => {
               if (element[0] === point1[0] && element[1] === min + i) {
-                isEmpty = false
+                return isEmpty = false
               }
             })
           }
         } else if (point1[1] === point2[1]) {
+          console.log('两点同行244')
+          // 左右相邻
+          if (Math.abs(point1[0] - point2[0]) === 1) return isEmpty = true
           // 同一行
           min = point1[0] < point2[0] ? point1[0] : point2[0]
           max = point1[0] > point2[0] ? point1[0] : point2[0]
@@ -248,7 +253,7 @@ export default {
           for (let i = 1; i < points; i++) {
             imgArr.forEach(element => {
               if (element[1] === point1[1] && element[0] === min + i) {
-                isEmpty = false
+                return isEmpty = false
               }
             })
           }
@@ -258,15 +263,18 @@ export default {
 
       // 判断能否一折连接
       function oneAngleLink(point1, point2) {
-        if (isEmptyLine(point1, point2)) return false
-        const point3 = [point1[0], point[1]]
-        const point4 = [point1[1], point[0]]
+        let canLink = false
+        if (isEmptyLine(point1, point2)) return canLink = false
+        const point3 = [point1[0], point2[1]]
+        const point4 = [point1[1], point2[0]]
+        console.log('一折相连265')
         if (isEmptyLine(point1, point3) && isEmptyLine(point2, point3)) {
-          return true
+          return canLink = true
         } else if (isEmptyLine(point1, point4) && isEmptyLine(point2, point4)) {
-          return true
+          return canLink = true
         } else {
-          return false
+          console.log('不能一折相连271')
+          return canLink
         }
       }
 
@@ -275,27 +283,33 @@ export default {
       function doubleAngleLink(point1, point2) {
         if (isEmptyLine(point1, point2) || oneAngleLink(point1, point2)) return false
         let commonPoint = []
+        let canLink = false
         // 从A点向右扫描
         for (let i = 1; i < 15 - point1[0]; i++) {
+          console.log('向右扫描')
           commonPoint = [point1[0] + i, point1[1]]
-          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return true
+          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return canLink = true
         }
         // 从A点向左扫描
         for (let i = 1; i < 1 + point1[0]; i++) {
+          console.log('向左扫描')
           commonPoint = [point1[0] - i, point1[1]]
-          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return true
+          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return canLink = true
         }
         // 从A点向下扫描
         for (let i = 1; i < 9 - point1[0]; i++) {
+          console.log('向下扫描')
           commonPoint = [point1[0], point1[1] + i]
-          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return true
+          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return canLink = true
         }
         // 从A点向上扫描
         for (let i = 1; i < 1 + point1[0]; i++) {
+          console.log('向上扫描')
           commonPoint = [point1[0], point1[1] - i]
-          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return true
+          if (isEmptyLine(point1, commonPoint) || oneAngleLink(point2, commonPoint)) return canLink = true
         }
-        return false
+        console.log('不能两折相连305')
+        return canLink
       }
 
       /*
@@ -332,30 +346,9 @@ export default {
               imgSelected2 = [...element]
             }
           })
-          // 两次点击的图片相同
-          if (imgSelected1[2] === imgSelected2[2]) {
-            console.log('相同图片')
-            // 位置相邻：上下相邻、左右相邻
-            if (Math.abs(imgSelected1[0] - imgSelected2[0]) === 1 && imgSelected1[1] === imgSelected2[1]) {
-              console.log('左右相邻')
-            } else if (Math.abs(imgSelected1[1] - imgSelected2[1]) === 1 && imgSelected1[0] === imgSelected2[0]) {
-              console.log('上下相邻')
-            } else if (imgSelected1[0] === imgSelected2[0] || imgSelected1[1] === imgSelected2[1]) {
-              // 两个格子在同一行或列上
-              console.log('在同一直线上')
-              // 可以直线相连
-              if (imgSelected1[0] === imgSelected2[0]) {
-                // 同一列
-                // 如果格子不为空
-                if (!isEmptyLine(imgSelected1, imgSelected2)) return
-              } else if (imgSelected1[1] === imgSelected2[1]) {
-                // 同一行
-                if (!isEmptyLine(imgSelected1, imgSelected2)) return
-              }
-              // 其中一个格子周围(8个格子)都不为空，则不能消除
-            }
 
-            // 把删除的图片在imgArr里删除
+          // 把删除的图片在imgArr里删除
+          function deleteImg() {
             imgArr.forEach((element, index) => {
               if (element[0] === imgSelected1[0][0] && element[1] === imgSelected1[0][1]) {
                 imgArr.splice(index, 1)
@@ -364,6 +357,29 @@ export default {
                 imgArr.splice(index, 1)
               }
             })
+          }
+
+          // 两次点击的图片相同
+          if (imgSelected1[2] === imgSelected2[2]) {
+            console.log('相同图片')
+            // 位置相邻：上下相邻、左右相邻
+            if (Math.abs(imgSelected1[0] - imgSelected2[0]) === 1 && imgSelected1[1] === imgSelected2[1]) {
+              console.log('左右相邻354')
+              deleteImg()
+            } else if (Math.abs(imgSelected1[1] - imgSelected2[1]) === 1 && imgSelected1[0] === imgSelected2[0]) {
+              console.log('上下相邻357')
+              deleteImg()
+            } else if (oneAngleLink(imgSelected1, imgSelected2)) {
+              console.log('一折相连360')
+              deleteImg()
+            } else if (doubleAngleLink(imgSelected1, imgSelected2)) {
+              console.log('两折相连363')
+              deleteImg()
+            } else {
+              return
+            }
+
+            
 
             // 在删除图片的格子画上默认背景，表示空格子
             context.fillStyle = 'rgb(179, 225, 240)'
