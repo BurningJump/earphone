@@ -222,6 +222,38 @@ export default {
       })
       console.log(imgArr)
 
+      // 判断两点之间是否为空，point = [x, y]
+      function isEmpty(point1, point2) {
+        let min
+        let max
+        let points
+        if (point1[0] === point2[0]) {
+          // 同一列
+          min = point1[1] < point2[1] ? point1[1] : point2[1]
+          max = point1[1] > point2[1] ? point1[1] : point2[1]
+          points = max - min
+          for (let i = 1; i < points; i++) {
+            imgArr.forEach(element => {
+              if (element[0] === point1[0] && element[1] === min + i) {
+                return false
+              }
+            })
+          }
+        } else if (point1[1] === point2[1]) {
+          // 同一行
+          min = point1[0] < point2[0] ? point1[0] : point2[0]
+          max = point1[0] > point2[0] ? point1[0] : point2[0]
+          points = max - min
+          for (let i = 1; i < points; i++) {
+            imgArr.forEach(element => {
+              if (element[1] === point1[1] && element[0] === min + i) {
+                return false
+              }
+            })
+          }
+        }
+      }
+
       /*
       * 鼠标点击事件
       * 用数组记录两次点击的坐标，存储选中的图片信息
@@ -229,11 +261,8 @@ export default {
       */
       let clickArr = []
       canvas.onclick = function(e) {
-        if (clickArr.length === 2) {
-          clickArr.shift()
-        }
         var location = getLocation(e.clientX, e.clientY)
-        console.log(location.x, location.y)
+        console.log(~~location.x, ~~location.y)
         if (location.x < 5 || location.x > 1115 || location.y < 5 || location.y > 635) {
           clickArr = []
         }
@@ -254,11 +283,9 @@ export default {
           imgArr.forEach((element, index) => {
             if (element[0] === clickArr[0][0] && element[1] === clickArr[0][1]) {
               imgSelected1 = [...element]
-              imgArr.splice(index, 1)
             }
             if (element[0] === clickArr[1][0] && element[1] === clickArr[1][1]) {
               imgSelected2 = [...element]
-              imgArr.splice(index, 1)
             }
           })
           // 两次点击的图片相同
@@ -267,18 +294,48 @@ export default {
             // 位置相邻：上下相邻、左右相邻
             if (Math.abs(imgSelected1[0] - imgSelected2[0]) === 1 && imgSelected1[1] === imgSelected2[1]) {
               console.log('左右相邻')
-              clickArr = []
-            }
-            if (Math.abs(imgSelected1[1] - imgSelected2[1]) === 1 && imgSelected1[0] === imgSelected2[0]) {
+            } else if (Math.abs(imgSelected1[1] - imgSelected2[1]) === 1 && imgSelected1[0] === imgSelected2[0]) {
               console.log('上下相邻')
-              clickArr = []
+            } else if (imgSelected1[0] === imgSelected2[0] || imgSelected1[1] === imgSelected2[1]) {
+              // 两个格子在同一行或列上
+              console.log('在同一直线上')
+              // 可以直线相连
+              if (imgSelected1[0] === imgSelected2[0]) {
+                // 同一列
+                // 如果格子不为空
+                if (!isEmpty(imgSelected1, imgSelected2)) return
+              } else if (imgSelected1[1] === imgSelected2[1]) {
+                // 同一行
+                if (!isEmpty(imgSelected1, imgSelected2)) return
+              }
+              // 其中一个格子周围(8个格子)都不为空，则不能消除
             }
+
+            // 把删除的图片在imgArr里删除
+            imgArr.forEach((element, index) => {
+              if (element[0] === imgSelected1[0][0] && element[1] === imgSelected1[0][1]) {
+                imgArr.splice(index, 1)
+              }
+              if (element[0] === imgSelected2[1][0] && element[1] === imgSelected2[1][1]) {
+                imgArr.splice(index, 1)
+              }
+            })
+
+            // 在删除图片的格子画上默认背景，表示空格子
             context.fillStyle = 'rgb(179, 225, 240)'
             context.fillRect(5 + 80 * imgSelected1[0], 5 + 80 * imgSelected1[1], 70, 70)
             context.fillRect(5 + 80 * imgSelected2[0], 5 + 80 * imgSelected2[1], 70, 70)
             console.log(imgArr)
 
+            // 删除相同图片后清空选择数组
+            clickArr = []
+            imgSelected1 = []
+            imgSelected2 = []
+
             // 直线相连
+          } else if (imgSelected1[2] !== imgSelected2[2]) {
+            // 两次点击的图片不相同，则只保留最后一次点击的图片位置信息
+            clickArr.shift()
           }
         }
       }
