@@ -21,7 +21,7 @@
       <button class="tips" @click="showTip">提示</button>
     </div>
     <div class="footer">
-      <button>重玩</button>
+      <button @click="drawBoard">重玩</button>
       <button>放大</button>
       <button>缩小</button>
       <button>大屏</button>
