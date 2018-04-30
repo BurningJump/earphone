@@ -1,31 +1,28 @@
 <template>
-  <div id="link-game">
-    <div class="header">
-      <span class="title">连连看</span>
-      <span class="head-btn">
-        <button>声音</button>
-        <button>换肤</button>
-        <button @click="switchLight">关灯</button>
-      </span>
+  <div id="link-game" :style="{height:screenHeight + 'px'}">
+    <div class="head-btn" :style="{width:width + 'px'}">
+      <el-button type="primary" size="small" v-show="!mute" @click="switchVolumn"><icon name="volume-up"></icon>声音</el-button>
+      <el-button type="primary" size="small" v-show="mute" @click="switchVolumn"><icon name="volume-off"></icon>声音</el-button>
+      <el-button type="primary" size="small" @click="changeTheme"><i class="icon theme"></i>换肤<el-color-picker v-model="themeColor" size="small" @active-change="changeTheme"></el-color-picker></el-button>
+      <el-button type="primary" size="small" @click="switchLight"><i class="icon bulb"></i>关灯</el-button>
     </div>
-    <div class="time-line">
-      <span class="level">级别 {{level}}</span>
-      <span>时间</span>
-      <p class="time-outbox"><span id="time"></span></p>
-      <span id="score">积分：{{score}}</span>
+    <div class="time-line" :style="{width:width + 'px'}">
+      <span class="level" :style="{width:width * 0.2 + 'px'}"><span>级别 {{level}}</span><span>时间</span></span>
+      <el-progress :style="{width:width * 0.6 + 'px'}" :show-text="false" :stroke-width="18" :percentage="remainingTimePercentage" color="rgba(142, 113, 199, 0.7)"></el-progress>
+      <!-- <span id="score" :style="{width:width * 0.2 + 'px'}"><span>积分：</span><span>{{score}}</span></span> -->
+      <span id="score" :style="{width:width * 0.2 + 'px'}">积分：{{score}}</span>
     </div>
-    <canvas id="canvas" width="1120" height="800"></canvas>
-    <div class="control">
-      <button class="pause" @click="pause">暂停</button>
-      <span id="tips-num">提示数 {{tips}}</span>
-      <button class="tips" @click="showTip">提示</button>
+    <canvas id="canvas" :width="width" :height="height"></canvas>
+    <div class="control-btn" :style="{width:width + 'px'}">
+      <el-button type="primary" size="small" v-show="!paused" @click="pause"><i class="icon pause"></i>暂停</el-button>
+      <el-button type="primary" size="small" v-show="paused" @click="pause"><i class="icon play"></i>开始</el-button>
+      <span id="tips-num">提示数 {{tips}} <el-button type="info" size="small" icon="el-icon-search" @click="showTip">提示</el-button></span>
     </div>
-    <div class="footer">
-      <button @click="drawBoard">重玩</button>
-      <button>放大</button>
-      <button>缩小</button>
-      <button>大屏</button>
-      <button @click="fullScreen">全屏</button>
+    <div class="foot-btn" :style="{width:width + 'px'}">
+      <el-button type="danger" size="small" icon="el-icon-refresh" @click="drawBoard">重玩</el-button>
+      <el-button type="primary" size="small" icon="el-icon-zoom-in">放大</el-button>
+      <el-button type="primary" size="small" icon="el-icon-zoom-out">缩小</el-button>
+      <el-button type="primary" size="small" @click="fullScreen"><i class="icon full-screen"></i>全屏</el-button>
     </div>
   </div>
 </template>
@@ -36,31 +33,100 @@ export default {
     return {
       imgUrl: '',
       time: 180,
+      countdown: null,
+      remainingTimePercentage: 100,
       tips: 6,
       score: 0,
       level: 1,
+      dark: false,
+      mute: false,
+      themeColor: '#ffffff',
       paused: false,
-      deadEnd: false
+      deadEnd: false,
+      screenWidth: 0,
+      screenHeight: 0,
+      size: 'medium',
+      cell: 80,
+      clickNums: 0
     }
   },
   mounted() {
-    this.drawBoard()
+    this.screenWidth = window.screen.width
+    this.screenHeight = window.screen.height
+    if (this.screenWidth === 1366) {
+      this.size = 'medium'
+      this.cell = 50
+    } else if (this.screenWidth >= 1920) {
+      this.size = 'large'
+      this.cell = 60
+    } else {
+      this.size = 'small'
+      this.cell = 40
+    }
+    this.$nextTick(function() {
+      this.drawBoard()
+    })
   },
   watch: {
     deadEnd(val) {
       console.log(val)
+    },
+    cell() {
+      this.drawBoard()
+    },
+    remainingTimePercentage(val) {
+      console.log(val)
+      if (val <= 0) {
+        clearInterval(this.countdown)
+        const self = this
+        self.$confirm('GAME OVER! 是否重玩？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          val = 100
+          self.drawBoard()
+        }).catch(() => {
+        })
+      }
+    },
+    clickNums(val) {
+      if (val === 1) {
+        // 第一次点击鼠标时开始倒计时，因remainingTimePercentage只能为0-100的整数，所以每过time/100*1000毫秒，remainingTimePercentage减一
+        const self = this
+        self.countdown = setInterval(function() {
+          self.remainingTimePercentage = parseInt(self.remainingTimePercentage - 1)
+        }, 1800)
+      }
+    }
+  },
+  computed: {
+    width() {
+      return this.cell * 14
+    },
+    height() {
+      return this.cell * 10
     }
   },
   methods: {
+    switchVolumn() {
+      this.mute = !this.mute
+    },
     switchLight() {
       const app = document.getElementById('app')
-      if (app.style.backgroundColor === 'black') {
+      if (this.dark) {
         app.style.backgroundColor = 'white'
         app.style.color = 'black'
       } else {
         app.style.backgroundColor = 'black'
         app.style.color = 'white'
       }
+      this.dark = !this.dark
+    },
+    changeTheme() {
+      // alert('暂未实现该功能！')
+      const app = document.getElementById('app')
+      app.style.backgroundColor = this.themeColor
     },
     pause() {
       if (this.paused) {
@@ -68,72 +134,40 @@ export default {
       } else {
         // pause
       }
+      this.paused = !this.paused
     },
     drawBoard() {
       const self = this
-      // const WIDTH = 1120
-      // const HEIGHT = 640
-
-      // 每一级180秒
-      // const countDown = setInterval(function() {
-      //   self.time--
-      // }, 1000)
-      // if (self.time <= 0) {
-      //   clearInterval(countDown)
-      //   console.log('game over!')
-      //   self.time = 180
-      // }
-      // const width = 1120
-      // const height = 800
+      self.remainingTimePercentage = 100
+      self.clickNums = 0
       const canvas = document.getElementById('canvas')
       const context = canvas.getContext('2d')
       context.save()
-      /* // 大矩形
-      context.fillStyle = 'rgb(0, 207, 255)'
-      context.fillRect(0, 0, WIDTH, HEIGHT)
-      context.restore() */
 
       // canvas区域
       context.fillStyle = 'rgb(179, 225, 240)'
-      context.fillRect(0, 0, 1120, 800)
+      context.fillRect(0, 0, canvas.width, canvas.height)
 
-      // 级别时间积分
-      context.font = '26px Georgia'
-      context.fillStyle = '#fff'
-
-      context.strokeStyle = '#000'
-
-      // 原点(0, 0)
-      /* for (let i = 0; i < 15; i++) {
-        context.moveTo(120 + 80 * i, 100)
-        context.lineTo(120 + 80 * i, 740)
-        context.stroke()
-      }
-      for (let j = 0; j < 9; j++) {
-        context.moveTo(120, 100 + 80 * j)
-        context.lineTo(1240, 100 + 80 * j)
-        context.stroke()
-      } */
       context.restore()
       context.strokeStyle = '#000'
-      // 70*70 小图片矩形
+      // 格子外框
       for (let k = 0; k < 14; k++) {
         for (let m = 0; m < 10; m++) {
-          context.strokeRect(5 + 80 * k, 5 + 80 * m, 70, 70)
+          context.strokeRect(5 + self.cell * k, 5 + self.cell * m, self.cell - 10, self.cell - 10)
         }
       }
 
       // 绘制图片
       const levelOne = [
-        'AliceBlue',
+        'DeepPink',
         'Plum',
         'MidnightBlue',
         'Aquamarine',
-        'Azure',
-        'Beige',
-        'Bisque',
+        'MediumAquaMarine',
+        'Yellow',
+        'SpringGreen',
         'Black',
-        'BlanchedAlmond',
+        'Maroon',
         'Blue',
         'Gold',
         'Brown',
@@ -145,7 +179,7 @@ export default {
         'CornflowerBlue',
         'Cornsilk',
         'Crimson',
-        'Cyan',
+        'Red',
         'DarkBlue',
         'DarkCyan',
         'DarkGoldenRod',
@@ -201,8 +235,8 @@ export default {
         coordinate.splice(index2, 1)
         imgArr.push([x2, y2, element])
         img.onload = function() {
-          context.drawImage(img, 5 + 80 * x1, 5 + 80 * y1, 70, 70)
-          context.drawImage(img, 5 + 80 * x2, 5 + 80 * y2, 70, 70)
+          context.drawImage(img, 5 + self.cell * x1, 5 + self.cell * y1, self.cell - 10, self.cell - 10)
+          context.drawImage(img, 5 + self.cell * x2, 5 + self.cell * y2, self.cell - 10, self.cell - 10)
         }
       })
       for (let i = 0, len = coordinate.length, num = len / 2; i < num; i++) {
@@ -220,8 +254,8 @@ export default {
         const img = new Image()
         img.src = require('../assets/images/' + levelOne[levelIndex] + '.png')
         img.onload = function() {
-          context.drawImage(img, 5 + 80 * x3, 5 + 80 * y3, 70, 70)
-          context.drawImage(img, 5 + 80 * x4, 5 + 80 * y4, 70, 70)
+          context.drawImage(img, 5 + self.cell * x3, 5 + self.cell * y3, self.cell - 10, self.cell - 10)
+          context.drawImage(img, 5 + self.cell * x4, 5 + self.cell * y4, self.cell - 10, self.cell - 10)
         }
       }
       imgArr.sort(function(x, y) {
@@ -311,7 +345,7 @@ export default {
             // point3上有图片，删除point3
             point4 = []
           }
-          if (point3 === [] || point4 === []) {
+          if (point3 === [] && point4 === []) {
             break
           }
         }
@@ -463,6 +497,21 @@ export default {
         return false
       }
 
+      // 获取鼠标点击坐标
+      function getLocation(x, y) {
+        var bbox = canvas.getBoundingClientRect()
+        return {
+          x: (x - bbox.left) * (canvas.width / bbox.width),
+          y: (y - bbox.top) * (canvas.height / bbox.height)
+          /*
+          * 此处不用下面两行是为了防止使用CSS和JS改变了canvas的高宽之后是表面积拉大而实际
+          * 显示像素不变而造成的坐标获取不准的情况
+          x: (x - bbox.left),
+          y: (y - bbox.top)
+          */
+        }
+      }
+
       /*
       * 鼠标点击事件
       * 用数组记录两次点击的坐标，存储选中的图片信息
@@ -470,14 +519,15 @@ export default {
       */
       let clickArr = []
       canvas.onclick = function(e) {
+        self.clickNums++
         var location = getLocation(e.clientX, e.clientY)
         // console.log(~~location.x, ~~location.y)
         if (location.x < 5 || location.x > 1115 || location.y < 5 || location.y > 635) {
           clickArr = []
         }
 
-        const x = Math.floor((location.x - 5) / 80)
-        const y = Math.floor((location.y - 5) / 80)
+        const x = Math.floor((location.x - 5) / self.cell)
+        const y = Math.floor((location.y - 5) / self.cell)
         clickArr.push([x, y])
         if (clickArr.length === 2) {
           // 如果两次点击同一位置的图片，则只保留一次坐标
@@ -489,18 +539,18 @@ export default {
           // 2018.04.26 01:20 接下来判断两次点击的图片颜色名称是否相同
           let imgSelected1 = []
           let imgSelected2 = []
-          imgArr.forEach((element, index) => {
-            if (element[0] === clickArr[0][0] && element[1] === clickArr[0][1]) {
-              imgSelected1 = [...element]
+          for (let i = 0, len = imgArr.length; i < len; i++) {
+            if (imgArr[i][0] === clickArr[0][0] && imgArr[i][1] === clickArr[0][1]) {
+              imgSelected1 = [...imgArr[i]]
             }
-            if (element[0] === clickArr[1][0] && element[1] === clickArr[1][1]) {
-              imgSelected2 = [...element]
+            if (imgArr[i][0] === clickArr[1][0] && imgArr[i][1] === clickArr[1][1]) {
+              imgSelected2 = [...imgArr[i]]
             }
-          })
+          }
 
           // 两次点击的图片相同
           if (imgSelected1[2] === imgSelected2[2]) {
-            // console.log('相同图片')
+            console.log('相同图片503', imgSelected1, imgSelected2)
             if (imgSelected1[0] === imgSelected2[0] || imgSelected1[1] === imgSelected2[1]) {
               // 同行或同列
               if (isEmptyLine(imgSelected1, imgSelected2)) {
@@ -535,8 +585,8 @@ export default {
 
             // 在删除图片的格子画上默认背景，表示空格子
             context.fillStyle = 'rgb(179, 225, 240)'
-            context.fillRect(5 + 80 * imgSelected1[0], 5 + 80 * imgSelected1[1], 70, 70)
-            context.fillRect(5 + 80 * imgSelected2[0], 5 + 80 * imgSelected2[1], 70, 70)
+            context.fillRect(5 + self.cell * imgSelected1[0], 5 + self.cell * imgSelected1[1], self.cell - 10, self.cell - 10)
+            context.fillRect(5 + self.cell * imgSelected2[0], 5 + self.cell * imgSelected2[1], self.cell - 10, self.cell - 10)
             // console.log(imgArr)
 
             // 删除相同图片后清空选择数组
@@ -580,7 +630,7 @@ export default {
                 imgArr[m].push(existImg[m])
                 img.src = require('../assets/images/' + imgArr[m] + '.png')
                 img.onload = function() {
-                  context.drawImage(img, 5 + 80 * imgArr[m][0], 5 + 80 * imgArr[m][1], 70, 70)
+                  context.drawImage(img, 5 + self.cell * imgArr[m][0], 5 + self.cell * imgArr[m][1], self.cell - 10, self.cell - 10)
                 }
               }
               existImg = []
@@ -592,19 +642,7 @@ export default {
           }
         }
       }
-      function getLocation(x, y) {
-        var bbox = canvas.getBoundingClientRect()
-        return {
-          x: (x - bbox.left) * (canvas.width / bbox.width),
-          y: (y - bbox.top) * (canvas.height / bbox.height)
-          /*
-          * 此处不用下面两行是为了防止使用CSS和JS改变了canvas的高宽之后是表面积拉大而实际
-          * 显示像素不变而造成的坐标获取不准的情况
-          x: (x - bbox.left),
-          y: (y - bbox.top)
-          */
-        }
-      }
+
       /*
       * 判断可连接情况：
       * 1.只有内容相同的图片才有消除的可能
@@ -666,29 +704,62 @@ div#link-game {
   justify-content: center;
   align-content: center;
   align-items: center; */
+  width: 100%;
+  height: 100%;
+  padding-top: 20px;
+  div.head-btn, .foot-btn, .control-btn {
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+  }
+  .foot-btn, .control-btn {
+    justify-content: space-between;
+  }
+  span#tips-num {
+    font-size: 20px;
+    font-weight: bold;
+  }
   div.time-line {
-    p.time-outbox {
-      position: relative;
-      display: inline-block;
-      width: 640px;
-      height: 20px;
-      margin: 0;
-      border: 1px solid #ccc;
-      span#time {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 320px;
-        height: 100%;
-        background-color: yellowgreen;
-      }
+    height: 41px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    span {
+      display: inline-flex;
+      justify-content: space-around;
+      align-content: center;
+      align-items: center;
+      font-size: 22px;
     }
   }
-  width: 1400px;
-  height: 1200px;
-    canvas {
-      width: 1120px;
-      height: 800px;
-    }
+  button {
+    margin: 0;
+    font-size: 18px;
+    width: 90px;
+    height: 40px;
+  }
+  .icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-size: cover;
+  }
+  .theme {
+    background-image: url('../assets/icons/theme-light.png');
+  }
+  .bulb {
+    background-image: url('../assets/icons/bulb-light.png');
+  }
+  .full-screen {
+    background-image: url('../assets/icons/fullscreen-light.png');
+  }
+  .pause {
+    background-image: url('../assets/icons/pause-light.png');
+  }
+  .play {
+    background-image: url('../assets/icons/play-light.png');
+  }
 }
 </style>

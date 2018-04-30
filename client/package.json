@@ -15,9 +15,11 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "element-ui": "^2.3.3",
+    "element-ui": "^2.3.7",
+    "font-awesome": "^4.7.0",
     "md5": "^2.2.1",
     "vue": "^2.5.2",
+    "vue-awesome": "^3.0.0",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
