@@ -4,6 +4,7 @@ import Login from '@/pages/login'
 import Register from '@/pages/register'
 import Link from '@/pages/link'
 import Board from '@/pages/board'
+import GluttonousSnake from '@/pages/GluttonousSnake'
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ export default new Router({
       path: '/link',
       name: 'Link',
       component: Link
+    },
+    {
+      path: '/GluttonousSnake',
+      name: 'GluttonousSnake',
+      component: GluttonousSnake
     },
     {
       path: '/board',

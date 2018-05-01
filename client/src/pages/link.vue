@@ -3,7 +3,7 @@
     <div class="head-btn" :style="{width:width + 'px'}">
       <el-button type="primary" size="small" v-show="!mute" @click="switchVolumn"><icon name="volume-up"></icon>声音</el-button>
       <el-button type="primary" size="small" v-show="mute" @click="switchVolumn"><icon name="volume-off"></icon>声音</el-button>
-      <el-button type="primary" size="small" @click="changeTheme"><i class="icon theme"></i>换肤<el-color-picker v-model="themeColor" size="small" @active-change="changeTheme"></el-color-picker></el-button>
+      <!-- <el-button type="primary" size="small" @click="changeTheme"><i class="icon theme"></i>换肤<el-color-picker v-model="themeColor" size="small" @active-change="changeTheme"></el-color-picker></el-button> -->
       <el-button type="primary" size="small" @click="switchLight"><i class="icon bulb"></i>关灯</el-button>
     </div>
     <div class="time-line" :style="{width:width + 'px'}">
@@ -12,7 +12,7 @@
       <!-- <span id="score" :style="{width:width * 0.2 + 'px'}"><span>积分：</span><span>{{score}}</span></span> -->
       <span id="score" :style="{width:width * 0.2 + 'px'}">积分：{{score}}</span>
     </div>
-    <canvas id="canvas" :width="width" :height="height"></canvas>
+    <canvas id="link-canvas" :width="width" :height="height"></canvas>
     <div class="control-btn" :style="{width:width + 'px'}">
       <el-button type="primary" size="small" v-show="!paused" @click="pause"><i class="icon pause"></i>暂停</el-button>
       <el-button type="primary" size="small" v-show="paused" @click="pause"><i class="icon play"></i>开始</el-button>
@@ -138,9 +138,10 @@ export default {
     },
     drawBoard() {
       const self = this
+      clearInterval(self.countdown)
       self.remainingTimePercentage = 100
       self.clickNums = 0
-      const canvas = document.getElementById('canvas')
+      const canvas = document.getElementById('link-canvas')
       const context = canvas.getContext('2d')
       context.save()
 
@@ -652,6 +653,11 @@ export default {
       */
     },
     deleteImg(imgArr, imgSelected1, imgSelected2) {
+      if (this.remainingTimePercentage >= 98) {
+        this.remainingTimePercentage = 100
+      } else {
+        this.remainingTimePercentage += 2
+      }
       // console.log(imgSelected1, imgSelected2)
       // 把删除的图片在imgArr里删除
       imgArr.forEach((element, index) => {
@@ -700,10 +706,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 div#link-game {
-  /* display: flex;
-  justify-content: center;
-  align-content: center;
-  align-items: center; */
   width: 100%;
   height: 100%;
   padding-top: 20px;
