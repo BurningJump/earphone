@@ -5,10 +5,10 @@
 <script>
 export default {
   data() {
-    return {}
+    return {};
   },
   methods: {}
-}
+};
 </script>
 
 <style lang="scss" scoped>

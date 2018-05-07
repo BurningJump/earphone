@@ -40,20 +40,21 @@ export default {
       score: 0,
       level: 1,
       paused: false
-    }
+    };
   },
   mounted() {
-    this.drawBoard()
+    this.drawBoard();
   },
   methods: {
     switchLight() {
-      const app = document.getElementById('app')
+      const app = document.getElementById('app');
+
       if (app.style.backgroundColor === 'black') {
-        app.style.backgroundColor = 'white'
-        app.style.color = 'black'
+        app.style.backgroundColor = 'white';
+        app.style.color = 'black';
       } else {
-        app.style.backgroundColor = 'black'
-        app.style.color = 'white'
+        app.style.backgroundColor = 'black';
+        app.style.color = 'white';
       }
     },
     pause() {
@@ -64,39 +65,40 @@ export default {
       }
     },
     drawBoard() {
-      const self = this
+      const self = this;
       // const WIDTH = 1120
       // const HEIGHT = 640
 
       // 每一级180秒
       const countDown = setInterval(function() {
-        self.time--
-      }, 1000)
+        self.time--;
+      }, 1000);
+
       if (self.time <= 0) {
-        clearInterval(countDown)
-        console.log('game over!')
-        self.time = 180
+        clearInterval(countDown);
+        console.log('game over!');
+        self.time = 180;
       }
       // const width = 1120
       // const height = 800
-      const canvas = document.getElementById('canvas')
-      const context = canvas.getContext('2d')
+      const canvas = document.getElementById('canvas');
+      const context = canvas.getContext('2d');
 
-      context.save()
+      context.save();
       /* // 大矩形
       context.fillStyle = 'rgb(0, 207, 255)'
       context.fillRect(0, 0, WIDTH, HEIGHT)
       context.restore() */
 
       // canvas区域
-      context.fillStyle = 'rgb(179, 225, 240)'
-      context.fillRect(0, 0, 1120, 640)
+      context.fillStyle = 'rgb(179, 225, 240)';
+      context.fillRect(0, 0, 1120, 640);
 
       // 级别时间积分
-      context.font = '26px Georgia'
-      context.fillStyle = '#fff'
+      context.font = '26px Georgia';
+      context.fillStyle = '#fff';
 
-      context.strokeStyle = '#000'
+      context.strokeStyle = '#000';
 
       // 原点(0, 0)
       /* for (let i = 0; i < 15; i++) {
@@ -109,12 +111,12 @@ export default {
         context.lineTo(1240, 100 + 80 * j)
         context.stroke()
       } */
-      context.restore()
-      context.strokeStyle = '#000'
+      context.restore();
+      context.strokeStyle = '#000';
       // 70*70 小图片矩形
       for (let k = 0; k < 14; k++) {
         for (let m = 0; m < 8; m++) {
-          context.strokeRect(5 + 80 * k, 5 + 80 * m, 70, 70)
+          context.strokeRect(5 + 80 * k, 5 + 80 * m, 70, 70);
         }
       }
 
@@ -150,7 +152,7 @@ export default {
         'DarkMagenta',
         'DarkOliveGreen',
         'Darkorange'
-      ]
+      ];
       /* const levelTwo = [
         'AliceBlue',
         'AntiqueWhite',
@@ -171,85 +173,93 @@ export default {
         [0, 5],	[1, 5],	[2, 5],	[3, 5],	[4, 5],	[5, 5],	[6, 5],	[7, 5],	[8, 5],	[9, 5],	[10, 5], [11, 5], [12, 5], [13, 5],
         [0, 6],	[1, 6],	[2, 6],	[3, 6],	[4, 6],	[5, 6],	[6, 6],	[7, 6],	[8, 6],	[9, 6],	[10, 6], [11, 6], [12, 6], [13, 6],
         [0, 7],	[1, 7],	[2, 7],	[3, 7],	[4, 7],	[5, 7],	[6, 7],	[7, 7],	[8, 7],	[9, 7],	[10, 7], [11, 7], [12, 7], [13, 7]
-      ]
+      ];
       /*
       * 随机摆放图片：
       * 1.先把每一级的所有图片摆放2次，共占用 level.length*2 格
       * 2.剩下14*8-level.length*2格，循环(14*8-level.length*2)/2次，每次随机抽取一张图片，摆放2格
       * 3.用数组记录图片名称或路径，以便后续判断两张图片是否相同
       */
-      const imgArr = []
+      const imgArr = [];
+
       levelOne.forEach((element, index) => {
-        const img = new Image()
-        img.src = require('../assets/images/' + element + '.png')
+        const img = new Image();
+
+        img.src = require('../assets/images/' + element + '.png');
         // 随机抽两个格子
-        const index1 = Math.floor(Math.random() * coordinate.length)
-        const x1 = coordinate[index1][0]
-        const y1 = coordinate[index1][1]
-        coordinate.splice(index1, 1)
-        imgArr.push([x1, y1, element])
-        const index2 = Math.floor(Math.random() * coordinate.length)
-        const x2 = coordinate[index2][0]
-        const y2 = coordinate[index2][1]
-        coordinate.splice(index2, 1)
-        imgArr.push([x2, y2, element])
+        const index1 = Math.floor(Math.random() * coordinate.length);
+        const x1 = coordinate[index1][0];
+        const y1 = coordinate[index1][1];
+
+        coordinate.splice(index1, 1);
+        imgArr.push([x1, y1, element]);
+        const index2 = Math.floor(Math.random() * coordinate.length);
+        const x2 = coordinate[index2][0];
+        const y2 = coordinate[index2][1];
+
+        coordinate.splice(index2, 1);
+        imgArr.push([x2, y2, element]);
         img.onload = function() {
-          context.drawImage(img, 5 + 80 * x1, 5 + 80 * y1, 70, 70)
-          context.drawImage(img, 5 + 80 * x2, 5 + 80 * y2, 70, 70)
-        }
-      })
+          context.drawImage(img, 5 + 80 * x1, 5 + 80 * y1, 70, 70);
+          context.drawImage(img, 5 + 80 * x2, 5 + 80 * y2, 70, 70);
+        };
+      });
       for (let i = 0, len = coordinate.length, num = len / 2; i < num; i++) {
-        const levelIndex = Math.floor(Math.random() * levelOne.length)
-        const index3 = Math.floor(Math.random() * coordinate.length)
-        const x3 = coordinate[index3][0]
-        const y3 = coordinate[index3][1]
-        coordinate.splice(index3, 1)
-        imgArr.push([x3, y3, levelOne[levelIndex]])
-        const index4 = Math.floor(Math.random() * coordinate.length)
-        const x4 = coordinate[index4][0]
-        const y4 = coordinate[index4][1]
-        coordinate.splice(index4, 1)
-        imgArr.push([x4, y4, levelOne[levelIndex]])
-        const img = new Image()
-        img.src = require('../assets/images/' + levelOne[levelIndex] + '.png')
+        const levelIndex = Math.floor(Math.random() * levelOne.length);
+        const index3 = Math.floor(Math.random() * coordinate.length);
+        const x3 = coordinate[index3][0];
+        const y3 = coordinate[index3][1];
+
+        coordinate.splice(index3, 1);
+        imgArr.push([x3, y3, levelOne[levelIndex]]);
+        const index4 = Math.floor(Math.random() * coordinate.length);
+        const x4 = coordinate[index4][0];
+        const y4 = coordinate[index4][1];
+
+        coordinate.splice(index4, 1);
+        imgArr.push([x4, y4, levelOne[levelIndex]]);
+        const img = new Image();
+
+        img.src = require('../assets/images/' + levelOne[levelIndex] + '.png');
         img.onload = function() {
-          context.drawImage(img, 5 + 80 * x3, 5 + 80 * y3, 70, 70)
-          context.drawImage(img, 5 + 80 * x4, 5 + 80 * y4, 70, 70)
-        }
+          context.drawImage(img, 5 + 80 * x3, 5 + 80 * y3, 70, 70);
+          context.drawImage(img, 5 + 80 * x4, 5 + 80 * y4, 70, 70);
+        };
       }
       imgArr.sort(function(x, y) {
-        return x[0] - y[0]
-      })
-      console.log(imgArr)
+        return x[0] - y[0];
+      });
+      console.log(imgArr);
 
       // 判断两点之间是否为空，point = [x, y]
       function isEmpty(point1, point2) {
-        let min
-        let max
-        let points
+        let min;
+        let max;
+        let points;
+
         if (point1[0] === point2[0]) {
           // 同一列
-          min = point1[1] < point2[1] ? point1[1] : point2[1]
-          max = point1[1] > point2[1] ? point1[1] : point2[1]
-          points = max - min
+          min = point1[1] < point2[1] ? point1[1] : point2[1];
+          max = point1[1] > point2[1] ? point1[1] : point2[1];
+          points = max - min;
           for (let i = 1; i < points; i++) {
             imgArr.forEach(element => {
               if (element[0] === point1[0] && element[1] === min + i) {
-                return false
+                return false;
               }
-            })
+            });
           }
         } else if (point1[1] === point2[1]) {
           // 同一行
-          min = point1[0] < point2[0] ? point1[0] : point2[0]
-          max = point1[0] > point2[0] ? point1[0] : point2[0]
-          points = max - min
+          min = point1[0] < point2[0] ? point1[0] : point2[0];
+          max = point1[0] > point2[0] ? point1[0] : point2[0];
+          points = max - min;
           for (let i = 1; i < points; i++) {
             imgArr.forEach(element => {
               if (element[1] === point1[1] && element[0] === min + i) {
-                return false
+                return false;
               }
-            })
+            });
           }
         }
       }
@@ -259,54 +269,58 @@ export default {
       * 用数组记录两次点击的坐标，存储选中的图片信息
       * 如果两张图片不一样，则保留最后一次点击的图片坐标
       */
-      let clickArr = []
+      let clickArr = [];
+
       canvas.onclick = function(e) {
-        var location = getLocation(e.clientX, e.clientY)
-        console.log(~~location.x, ~~location.y)
+        var location = getLocation(e.clientX, e.clientY);
+
+        console.log(~~location.x, ~~location.y);
         if (location.x < 5 || location.x > 1115 || location.y < 5 || location.y > 635) {
-          clickArr = []
+          clickArr = [];
         }
 
-        const x = Math.floor((location.x - 5) / 80)
-        const y = Math.floor((location.y - 5) / 80)
-        clickArr.push([x, y])
+        const x = Math.floor((location.x - 5) / 80);
+        const y = Math.floor((location.y - 5) / 80);
+
+        clickArr.push([x, y]);
         if (clickArr.length === 2) {
           // 如果两次点击同一位置的图片，则只保留一次坐标
           if (clickArr[0][0] === clickArr[1][0] && clickArr[0][1] === clickArr[1][1]) {
-            clickArr.shift()
+            clickArr.shift();
           }
           // imgArr 为乱序
-          console.log(clickArr)
+          console.log(clickArr);
           // 2018.04.26 01:20 接下来判断两次点击的图片颜色名称是否相同
-          let imgSelected1 = []
-          let imgSelected2 = []
+          let imgSelected1 = [];
+          let imgSelected2 = [];
+
           imgArr.forEach((element, index) => {
             if (element[0] === clickArr[0][0] && element[1] === clickArr[0][1]) {
-              imgSelected1 = [...element]
+              imgSelected1 = [...element];
             }
             if (element[0] === clickArr[1][0] && element[1] === clickArr[1][1]) {
-              imgSelected2 = [...element]
+              imgSelected2 = [...element];
             }
-          })
+          });
           // 两次点击的图片相同
           if (imgSelected1[2] === imgSelected2[2]) {
-            console.log('相同图片')
+            console.log('相同图片');
             // 位置相邻：上下相邻、左右相邻
             if (Math.abs(imgSelected1[0] - imgSelected2[0]) === 1 && imgSelected1[1] === imgSelected2[1]) {
-              console.log('左右相邻')
+              console.log('左右相邻');
             } else if (Math.abs(imgSelected1[1] - imgSelected2[1]) === 1 && imgSelected1[0] === imgSelected2[0]) {
-              console.log('上下相邻')
+              console.log('上下相邻');
             } else if (imgSelected1[0] === imgSelected2[0] || imgSelected1[1] === imgSelected2[1]) {
               // 两个格子在同一行或列上
-              console.log('在同一直线上')
+              console.log('在同一直线上');
               // 可以直线相连
               if (imgSelected1[0] === imgSelected2[0]) {
                 // 同一列
                 // 如果格子不为空
-                if (!isEmpty(imgSelected1, imgSelected2)) return
+                if (!isEmpty(imgSelected1, imgSelected2)) { return; }
               } else if (imgSelected1[1] === imgSelected2[1]) {
                 // 同一行
-                if (!isEmpty(imgSelected1, imgSelected2)) return
+                if (!isEmpty(imgSelected1, imgSelected2)) { return; }
               }
               // 其中一个格子周围(8个格子)都不为空，则不能消除
             }
@@ -314,33 +328,34 @@ export default {
             // 把删除的图片在imgArr里删除
             imgArr.forEach((element, index) => {
               if (element[0] === imgSelected1[0][0] && element[1] === imgSelected1[0][1]) {
-                imgArr.splice(index, 1)
+                imgArr.splice(index, 1);
               }
               if (element[0] === imgSelected2[1][0] && element[1] === imgSelected2[1][1]) {
-                imgArr.splice(index, 1)
+                imgArr.splice(index, 1);
               }
-            })
+            });
 
             // 在删除图片的格子画上默认背景，表示空格子
-            context.fillStyle = 'rgb(179, 225, 240)'
-            context.fillRect(5 + 80 * imgSelected1[0], 5 + 80 * imgSelected1[1], 70, 70)
-            context.fillRect(5 + 80 * imgSelected2[0], 5 + 80 * imgSelected2[1], 70, 70)
-            console.log(imgArr)
+            context.fillStyle = 'rgb(179, 225, 240)';
+            context.fillRect(5 + 80 * imgSelected1[0], 5 + 80 * imgSelected1[1], 70, 70);
+            context.fillRect(5 + 80 * imgSelected2[0], 5 + 80 * imgSelected2[1], 70, 70);
+            console.log(imgArr);
 
             // 删除相同图片后清空选择数组
-            clickArr = []
-            imgSelected1 = []
-            imgSelected2 = []
+            clickArr = [];
+            imgSelected1 = [];
+            imgSelected2 = [];
 
             // 直线相连
           } else if (imgSelected1[2] !== imgSelected2[2]) {
             // 两次点击的图片不相同，则只保留最后一次点击的图片位置信息
-            clickArr.shift()
+            clickArr.shift();
           }
         }
-      }
+      };
       function getLocation(x, y) {
-        var bbox = canvas.getBoundingClientRect()
+        var bbox = canvas.getBoundingClientRect();
+
         return {
           x: (x - bbox.left) * (canvas.width / bbox.width),
           y: (y - bbox.top) * (canvas.height / bbox.height)
@@ -350,7 +365,7 @@ export default {
           x: (x - bbox.left),
           y: (y - bbox.top)
           */
-        }
+        };
       }
       /*
       * 判断可连接情况：
@@ -361,38 +376,39 @@ export default {
       */
     },
     fullScreen() {
-      const docElm = document.documentElement
+      const docElm = document.documentElement;
+
       if (docElm.requestFullscreen) {
         // W3C
-        docElm.requestFullscreen()
+        docElm.requestFullscreen();
       } else if (docElm.mozRequestFullScreen) {
         // FireFox
-        docElm.mozRequestFullScreen()
+        docElm.mozRequestFullScreen();
       } else if (docElm.webkitRequestFullScreen) {
         // Chrome等
-        docElm.webkitRequestFullScreen()
+        docElm.webkitRequestFullScreen();
       } else if (docElm.msRequestFullscreen) {
         // IE11
-        docElm.msRequestFullscreen()
+        docElm.msRequestFullscreen();
       }
 
       // 退出全屏：
       if (document.exitFullscreen) {
-        document.exitFullscreen()
+        document.exitFullscreen();
       } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen()
+        document.mozCancelFullScreen();
       } else if (document.webkitCancelFullScreen) {
-        document.webkitCancelFullScreen()
+        document.webkitCancelFullScreen();
       } else if (document.msExitFullscreen) {
-        document.msExitFullscreen()
+        document.msExitFullscreen();
       }
     },
     showTip() {
-      if (this.tips === 0) return
-      this.tips--
+      if (this.tips === 0) { return; }
+      this.tips--;
     }
   }
-}
+};
 </script>
 <style lang="scss" scoped>
 div#link-game {

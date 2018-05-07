@@ -23,39 +23,39 @@ export default {
   data() {
     var checkPhone = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('手机不能为空'))
+        return callback(new Error('手机不能为空'));
       }
       setTimeout(() => {
         if (!Number.isInteger(value)) {
-          callback(new Error('请输入数字值'))
+          callback(new Error('请输入数字值'));
         } else {
           if (value < 18) {
-            callback(new Error('必须年满18岁'))
+            callback(new Error('必须年满18岁'));
           } else {
-            callback()
+            callback();
           }
         }
-      }, 1000)
-    }
+      }, 1000);
+    };
     var validatePwd = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入密码'))
+        callback(new Error('请输入密码'));
       } else {
         if (this.registerForm.repwd !== '') {
-          this.$refs.registerForm.validateField('repwd')
+          this.$refs.registerForm.validateField('repwd');
         }
-        callback()
+        callback();
       }
-    }
+    };
     var validateRepwd = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请再次输入密码'))
+        callback(new Error('请再次输入密码'));
       } else if (value !== this.registerForm.pwd) {
-        callback(new Error('两次输入密码不一致!'))
+        callback(new Error('两次输入密码不一致!'));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     return {
       registerForm: {
         pwd: '',
@@ -73,30 +73,30 @@ export default {
           { validator: checkPhone, trigger: 'blur' }
         ]
       }
-    }
+    };
   },
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.registerForm.pwd = this.md5(this.registerForm.pwd)
-          this.registerForm.repwd = this.md5(this.registerForm.repwd)
+          this.registerForm.pwd = this.md5(this.registerForm.pwd);
+          this.registerForm.repwd = this.md5(this.registerForm.repwd);
           this.$http.post('api/user/register', this.registerForm).then(res => {
-            console.log(res.data)
+            console.log(res.data);
           }).catch(err => {
-            console.log(err)
-          })
+            console.log(err);
+          });
         } else {
-          console.log('error submit!!')
-          return false
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields()
+      this.$refs[formName].resetFields();
     }
   }
-}
+};
 </script>
 
 <style lang="scss">
