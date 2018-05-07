@@ -1,31 +1,28 @@
 <template>
-  <div id="link-game">
-    <div class="header">
-      <span class="title">连连看</span>
-      <span class="head-btn">
-        <button>声音</button>
-        <button>换肤</button>
-        <button @click="switchLight">关灯</button>
-      </span>
+  <div id="link-game" :style="{height:screenHeight + 'px'}">
+    <div class="head-btn" :style="{width:width + 'px'}">
+      <el-button type="primary" size="small" v-show="!mute" @click="switchVolumn"><icon name="volume-up"></icon>声音</el-button>
+      <el-button type="primary" size="small" v-show="mute" @click="switchVolumn"><icon name="volume-off"></icon>声音</el-button>
+      <!-- <el-button type="primary" size="small" @click="changeTheme"><i class="icon theme"></i>换肤<el-color-picker v-model="themeColor" size="small" @active-change="changeTheme"></el-color-picker></el-button> -->
+      <el-button type="primary" size="small" @click="switchLight"><i class="icon bulb"></i>关灯</el-button>
     </div>
-    <div class="time-line">
-      <span class="level">级别 {{level}}</span>
-      <span>时间</span>
-      <p class="time-outbox"><span id="time"></span></p>
-      <span id="score">积分：{{score}}</span>
+    <div class="time-line" :style="{width:width + 'px'}">
+      <span class="level" :style="{width:width * 0.2 + 'px'}"><span>级别 {{level}}</span><span>时间</span></span>
+      <el-progress :style="{width:width * 0.6 + 'px'}" :show-text="false" :stroke-width="18" :percentage="remainingTimePercentage" color="rgba(142, 113, 199, 0.7)"></el-progress>
+      <!-- <span id="score" :style="{width:width * 0.2 + 'px'}"><span>积分：</span><span>{{score}}</span></span> -->
+      <span id="score" :style="{width:width * 0.2 + 'px'}">积分：{{score}}</span>
     </div>
-    <canvas id="canvas" width="1120" height="640"></canvas>
-    <div class="control">
-      <button class="pause" @click="pause">暂停</button>
-      <span id="tips-num">提示数 {{tips}}</span>
-      <button class="tips" @click="showTip">提示</button>
+    <canvas id="link-canvas" :width="width" :height="height"></canvas>
+    <div class="control-btn" :style="{width:width + 'px'}">
+      <el-button type="primary" size="small" v-show="!paused" @click="pause"><i class="icon pause"></i>暂停</el-button>
+      <el-button type="primary" size="small" v-show="paused" @click="pause"><i class="icon play"></i>开始</el-button>
+      <span id="tips-num">提示数 {{tips}} <el-button type="info" size="small" icon="el-icon-search" @click="showTip">提示</el-button></span>
     </div>
-    <div class="footer">
-      <button>重玩</button>
-      <button>放大</button>
-      <button>缩小</button>
-      <button>大屏</button>
-      <button @click="fullScreen">全屏</button>
+    <div class="foot-btn" :style="{width:width + 'px'}">
+      <el-button type="danger" size="small" icon="el-icon-refresh" @click="drawBoard">重玩</el-button>
+      <el-button type="primary" size="small" icon="el-icon-zoom-in">放大</el-button>
+      <el-button type="primary" size="small" icon="el-icon-zoom-out">缩小</el-button>
+      <el-button type="primary" size="small" @click="fullScreen"><i class="icon full-screen"></i>全屏</el-button>
     </div>
   </div>
 </template>
@@ -36,26 +33,100 @@ export default {
     return {
       imgUrl: '',
       time: 180,
+      countdown: null,
+      remainingTimePercentage: 100,
       tips: 6,
       score: 0,
       level: 1,
-      paused: false
+      dark: false,
+      mute: false,
+      themeColor: '#ffffff',
+      paused: false,
+      deadEnd: false,
+      screenWidth: 0,
+      screenHeight: 0,
+      size: 'medium',
+      cell: 80,
+      clickNums: 0
     };
   },
   mounted() {
-    this.drawBoard();
+    this.screenWidth = window.screen.width;
+    this.screenHeight = window.screen.height;
+    if (this.screenWidth === 1366) {
+      this.size = 'medium';
+      this.cell = 50;
+    } else if (this.screenWidth >= 1920) {
+      this.size = 'large';
+      this.cell = 60;
+    } else {
+      this.size = 'small';
+      this.cell = 40;
+    }
+    this.$nextTick(function() {
+      this.drawBoard();
+    });
+  },
+  watch: {
+    deadEnd(val) {
+      console.log(val);
+    },
+    cell() {
+      this.drawBoard();
+    },
+    remainingTimePercentage(val) {
+      console.log(val);
+      if (val <= 0) {
+        clearInterval(this.countdown);
+        const self = this;
+        self.$confirm('GAME OVER! 是否重玩？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          val = 100;
+          self.drawBoard();
+        }).catch(() => {
+        });
+      }
+    },
+    clickNums(val) {
+      if (val === 1) {
+        // 第一次点击鼠标时开始倒计时，因remainingTimePercentage只能为0-100的整数，所以每过time/100*1000毫秒，remainingTimePercentage减一
+        const self = this;
+        self.countdown = setInterval(function() {
+          self.remainingTimePercentage = parseInt(self.remainingTimePercentage - 1);
+        }, 1800);
+      }
+    }
+  },
+  computed: {
+    width() {
+      return this.cell * 14;
+    },
+    height() {
+      return this.cell * 10;
+    }
   },
   methods: {
+    switchVolumn() {
+      this.mute = !this.mute;
+    },
     switchLight() {
       const app = document.getElementById('app');
-
-      if (app.style.backgroundColor === 'black') {
+      if (this.dark) {
         app.style.backgroundColor = 'white';
         app.style.color = 'black';
       } else {
         app.style.backgroundColor = 'black';
         app.style.color = 'white';
       }
+      this.dark = !this.dark;
+    },
+    changeTheme() {
+      // alert('暂未实现该功能！')
+      const app = document.getElementById('app');
+      app.style.backgroundColor = this.themeColor;
     },
     pause() {
       if (this.paused) {
@@ -63,74 +134,41 @@ export default {
       } else {
         // pause
       }
+      this.paused = !this.paused;
     },
     drawBoard() {
       const self = this;
-      // const WIDTH = 1120
-      // const HEIGHT = 640
-
-      // 每一级180秒
-      const countDown = setInterval(function() {
-        self.time--;
-      }, 1000);
-
-      if (self.time <= 0) {
-        clearInterval(countDown);
-        console.log('game over!');
-        self.time = 180;
-      }
-      // const width = 1120
-      // const height = 800
-      const canvas = document.getElementById('canvas');
+      clearInterval(self.countdown);
+      self.remainingTimePercentage = 100;
+      self.clickNums = 0;
+      const canvas = document.getElementById('link-canvas');
       const context = canvas.getContext('2d');
-
       context.save();
-      /* // 大矩形
-      context.fillStyle = 'rgb(0, 207, 255)'
-      context.fillRect(0, 0, WIDTH, HEIGHT)
-      context.restore() */
 
       // canvas区域
       context.fillStyle = 'rgb(179, 225, 240)';
-      context.fillRect(0, 0, 1120, 640);
+      context.fillRect(0, 0, canvas.width, canvas.height);
 
-      // 级别时间积分
-      context.font = '26px Georgia';
-      context.fillStyle = '#fff';
-
-      context.strokeStyle = '#000';
-
-      // 原点(0, 0)
-      /* for (let i = 0; i < 15; i++) {
-        context.moveTo(120 + 80 * i, 100)
-        context.lineTo(120 + 80 * i, 740)
-        context.stroke()
-      }
-      for (let j = 0; j < 9; j++) {
-        context.moveTo(120, 100 + 80 * j)
-        context.lineTo(1240, 100 + 80 * j)
-        context.stroke()
-      } */
       context.restore();
       context.strokeStyle = '#000';
-      // 70*70 小图片矩形
+      // 格子外框
       for (let k = 0; k < 14; k++) {
-        for (let m = 0; m < 8; m++) {
-          context.strokeRect(5 + 80 * k, 5 + 80 * m, 70, 70);
+        for (let m = 0; m < 10; m++) {
+          context.strokeRect(5 + self.cell * k, 5 + self.cell * m, self.cell - 10, self.cell - 10);
         }
       }
 
       // 绘制图片
       const levelOne = [
-        'AliceBlue',
+        'DeepPink',
         'Plum',
         'MidnightBlue',
         'Aquamarine',
-        'Azure',
-        'Beige',
-        'Bisque',
+        'MediumAquaMarine',
+        'Yellow',
+        'SpringGreen',
         'Black',
-        'BlanchedAlmond',
+        'Maroon',
         'Blue',
         'Gold',
         'Brown',
@@ -142,7 +180,7 @@ export default {
         'CornflowerBlue',
         'Cornsilk',
         'Crimson',
-        'Cyan',
+        'Red',
         'DarkBlue',
         'DarkCyan',
         'DarkGoldenRod',
@@ -172,7 +210,9 @@ export default {
         [0, 4],	[1, 4],	[2, 4],	[3, 4],	[4, 4],	[5, 4],	[6, 4],	[7, 4],	[8, 4],	[9, 4],	[10, 4], [11, 4], [12, 4], [13, 4],
         [0, 5],	[1, 5],	[2, 5],	[3, 5],	[4, 5],	[5, 5],	[6, 5],	[7, 5],	[8, 5],	[9, 5],	[10, 5], [11, 5], [12, 5], [13, 5],
         [0, 6],	[1, 6],	[2, 6],	[3, 6],	[4, 6],	[5, 6],	[6, 6],	[7, 6],	[8, 6],	[9, 6],	[10, 6], [11, 6], [12, 6], [13, 6],
-        [0, 7],	[1, 7],	[2, 7],	[3, 7],	[4, 7],	[5, 7],	[6, 7],	[7, 7],	[8, 7],	[9, 7],	[10, 7], [11, 7], [12, 7], [13, 7]
+        [0, 7],	[1, 7],	[2, 7],	[3, 7],	[4, 7],	[5, 7],	[6, 7],	[7, 7],	[8, 7],	[9, 7],	[10, 7], [11, 7], [12, 7], [13, 7],
+        [0, 8],	[1, 8],	[2, 8],	[3, 8],	[4, 8],	[5, 8],	[6, 8],	[7, 8],	[8, 8],	[9, 8],	[10, 8], [11, 8], [12, 8], [13, 8],
+        [0, 9],	[1, 9],	[2, 9],	[3, 9],	[4, 9],	[5, 9],	[6, 9],	[7, 9],	[8, 9],	[9, 9],	[10, 9], [11, 9], [12, 9], [13, 9]
       ];
       /*
       * 随机摆放图片：
@@ -200,8 +240,8 @@ export default {
         coordinate.splice(index2, 1);
         imgArr.push([x2, y2, element]);
         img.onload = function() {
-          context.drawImage(img, 5 + 80 * x1, 5 + 80 * y1, 70, 70);
-          context.drawImage(img, 5 + 80 * x2, 5 + 80 * y2, 70, 70);
+          context.drawImage(img, 5 + self.cell * x1, 5 + self.cell * y1, self.cell - 10, self.cell - 10);
+          context.drawImage(img, 5 + self.cell * x2, 5 + self.cell * y2, self.cell - 10, self.cell - 10);
         };
       });
       for (let i = 0, len = coordinate.length, num = len / 2; i < num; i++) {
@@ -222,140 +262,252 @@ export default {
 
         img.src = require('../assets/images/' + levelOne[levelIndex] + '.png');
         img.onload = function() {
-          context.drawImage(img, 5 + 80 * x3, 5 + 80 * y3, 70, 70);
-          context.drawImage(img, 5 + 80 * x4, 5 + 80 * y4, 70, 70);
+          context.drawImage(img, 5 + self.cell * x3, 5 + self.cell * y3, self.cell - 10, self.cell - 10);
+          context.drawImage(img, 5 + self.cell * x4, 5 + self.cell * y4, self.cell - 10, self.cell - 10);
         };
       }
       imgArr.sort(function(x, y) {
         return x[0] - y[0];
       });
-      console.log(imgArr);
+      // console.log(imgArr)
 
       // 判断两点之间是否为空，point = [x, y]
-      function isEmpty(point1, point2) {
+      function isEmptyLine(point1, point2) {
+        let isEmpty = true;
         let min;
         let max;
         let points;
-
         if (point1[0] === point2[0]) {
-          // 同一列
-          min = point1[1] < point2[1] ? point1[1] : point2[1];
-          max = point1[1] > point2[1] ? point1[1] : point2[1];
-          points = max - min;
-          for (let i = 1; i < points; i++) {
-            imgArr.forEach(element => {
-              if (element[0] === point1[0] && element[1] === min + i) {
-                return false;
+          // console.log('两点同列231')
+          // 上下相邻
+          if (Math.abs(point1[1] - point2[1]) === 1) {
+            isEmpty = true;
+            return isEmpty;
+          } else {
+            // 同一列
+            min = point1[1] < point2[1] ? point1[1] : point2[1];
+            max = point1[1] > point2[1] ? point1[1] : point2[1];
+            points = max - min;
+            for (let i = 1; i < points; i++) {
+              // isEmpty = true
+              for (let j = 0, len = imgArr.length; j < len; j++) {
+                if (imgArr[j][0] === point1[0] && imgArr[j][1] === min + i) {
+                  isEmpty = false;
+                  break;
+                }
               }
-            });
+              // console.log(isEmpty, 'isEmpty249')
+              if (!isEmpty) {
+                break;
+              } else {
+                continue;
+              }
+            }
           }
+          return isEmpty;
         } else if (point1[1] === point2[1]) {
-          // 同一行
-          min = point1[0] < point2[0] ? point1[0] : point2[0];
-          max = point1[0] > point2[0] ? point1[0] : point2[0];
-          points = max - min;
-          for (let i = 1; i < points; i++) {
-            imgArr.forEach(element => {
-              if (element[1] === point1[1] && element[0] === min + i) {
-                return false;
+          // console.log('两点同行259')
+          // 左右相邻
+          if (Math.abs(point1[0] - point2[0]) === 1) {
+            return true;
+          } else {
+            // 同一行
+            min = point1[0] < point2[0] ? point1[0] : point2[0];
+            max = point1[0] > point2[0] ? point1[0] : point2[0];
+            points = max - min;
+            for (let i = 1; i < points; i++) {
+              for (let j = 0, len = imgArr.length; j < len; j++) {
+                if (imgArr[j][1] === point1[1] && imgArr[j][0] === min + i) {
+                  // console.log(imgArr[j], '271---')
+                  isEmpty = false;
+                  break;
+                }
               }
-            });
+              // console.log(isEmpty, 'isEmpty276')
+              if (!isEmpty) {
+                break;
+              } else {
+                continue;
+              }
+            }
           }
+          return isEmpty;
+        } else {
+          return false;
         }
+        // return isEmpty
       }
 
-      /*
-      * 鼠标点击事件
-      * 用数组记录两次点击的坐标，存储选中的图片信息
-      * 如果两张图片不一样，则保留最后一次点击的图片坐标
-      */
-      let clickArr = [];
-
-      canvas.onclick = function(e) {
-        var location = getLocation(e.clientX, e.clientY);
-
-        console.log(~~location.x, ~~location.y);
-        if (location.x < 5 || location.x > 1115 || location.y < 5 || location.y > 635) {
-          clickArr = [];
-        }
-
-        const x = Math.floor((location.x - 5) / 80);
-        const y = Math.floor((location.y - 5) / 80);
-
-        clickArr.push([x, y]);
-        if (clickArr.length === 2) {
-          // 如果两次点击同一位置的图片，则只保留一次坐标
-          if (clickArr[0][0] === clickArr[1][0] && clickArr[0][1] === clickArr[1][1]) {
-            clickArr.shift();
+      // 判断能否一折连接
+      function oneAngleLink(point1, point2) {
+        let canLink = false;
+        let point3 = [point1[0], point2[1]];
+        let point4 = [point2[0], point1[1]];
+        // console.log(point3, point4, '293,点3和4')
+        for (let i = 0, len = imgArr.length; i < len; i++) {
+          if (imgArr[i][0] === point3[0] && imgArr[i][1] === point3[1]) {
+            // point3上有图片，删除point3
+            point3 = [];
           }
-          // imgArr 为乱序
-          console.log(clickArr);
-          // 2018.04.26 01:20 接下来判断两次点击的图片颜色名称是否相同
-          let imgSelected1 = [];
-          let imgSelected2 = [];
-
-          imgArr.forEach((element, index) => {
-            if (element[0] === clickArr[0][0] && element[1] === clickArr[0][1]) {
-              imgSelected1 = [...element];
-            }
-            if (element[0] === clickArr[1][0] && element[1] === clickArr[1][1]) {
-              imgSelected2 = [...element];
-            }
-          });
-          // 两次点击的图片相同
-          if (imgSelected1[2] === imgSelected2[2]) {
-            console.log('相同图片');
-            // 位置相邻：上下相邻、左右相邻
-            if (Math.abs(imgSelected1[0] - imgSelected2[0]) === 1 && imgSelected1[1] === imgSelected2[1]) {
-              console.log('左右相邻');
-            } else if (Math.abs(imgSelected1[1] - imgSelected2[1]) === 1 && imgSelected1[0] === imgSelected2[0]) {
-              console.log('上下相邻');
-            } else if (imgSelected1[0] === imgSelected2[0] || imgSelected1[1] === imgSelected2[1]) {
-              // 两个格子在同一行或列上
-              console.log('在同一直线上');
-              // 可以直线相连
-              if (imgSelected1[0] === imgSelected2[0]) {
-                // 同一列
-                // 如果格子不为空
-                if (!isEmpty(imgSelected1, imgSelected2)) { return; }
-              } else if (imgSelected1[1] === imgSelected2[1]) {
-                // 同一行
-                if (!isEmpty(imgSelected1, imgSelected2)) { return; }
-              }
-              // 其中一个格子周围(8个格子)都不为空，则不能消除
-            }
-
-            // 把删除的图片在imgArr里删除
-            imgArr.forEach((element, index) => {
-              if (element[0] === imgSelected1[0][0] && element[1] === imgSelected1[0][1]) {
-                imgArr.splice(index, 1);
-              }
-              if (element[0] === imgSelected2[1][0] && element[1] === imgSelected2[1][1]) {
-                imgArr.splice(index, 1);
-              }
-            });
-
-            // 在删除图片的格子画上默认背景，表示空格子
-            context.fillStyle = 'rgb(179, 225, 240)';
-            context.fillRect(5 + 80 * imgSelected1[0], 5 + 80 * imgSelected1[1], 70, 70);
-            context.fillRect(5 + 80 * imgSelected2[0], 5 + 80 * imgSelected2[1], 70, 70);
-            console.log(imgArr);
-
-            // 删除相同图片后清空选择数组
-            clickArr = [];
-            imgSelected1 = [];
-            imgSelected2 = [];
-
-            // 直线相连
-          } else if (imgSelected1[2] !== imgSelected2[2]) {
-            // 两次点击的图片不相同，则只保留最后一次点击的图片位置信息
-            clickArr.shift();
+          if (imgArr[i][0] === point4[0] && imgArr[i][1] === point4[1]) {
+            // point3上有图片，删除point3
+            point4 = [];
+          }
+          if (point3 === [] && point4 === []) {
+            break;
           }
         }
-      };
+        if (point3 === [] || point4 === []) {
+          return canLink;
+        }
+        // console.log('一折相连265')
+        // console.log(point3, point4, '311,点3和4')
+        if ((point3 !== [] && isEmptyLine(point1, point3) && isEmptyLine(point2, point3)) || (point4 !== [] && isEmptyLine(point1, point4) && isEmptyLine(point2, point4))) {
+          canLink = true;
+        } else {
+          // console.log('不能一折相连271')
+          canLink = false;
+        }
+        return canLink;
+      }
+
+      // 判断能否两折连接，可以转化为判断能否找到一个C单元格，该C单元格可以与A单元格0折连接，
+      // 且C与B可以1折连接。若能找到这样一个C单元格，那么A与B就可以2折连接
+      function doubleAngleLink(point1, point2) {
+        // if (isEmptyLine(point1, point2) || oneAngleLink(point1, point2)) return false
+        let commonPoint = [];
+        let canRightLink = false;
+        let canLeftLink = false;
+        let canDownLink = false;
+        let canUpLink = false;
+        let isEmptyRight = true;
+        let isEmptyLeft = true;
+        let isEmptyDown = true;
+        let isEmptyUp = true;
+        // 从A点向右扫描
+        for (let i = 1; i < 15 - point1[0]; i++) {
+          // console.log('向右扫描')
+          commonPoint = [point1[0] + i, point1[1]];
+          for (let j = 0, len = imgArr.length; j < len; j++) {
+            if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+              // console.log(imgArr[j], commonPoint, '339')
+              isEmptyRight = false;
+              break;
+            }
+          }
+          if (isEmptyRight) {
+            if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
+              canRightLink = true;
+              break;
+            } else {
+              continue;
+            }
+          } else {
+            break;
+          }
+        }
+        if (canRightLink) {
+          return canRightLink;
+        } else {
+          // console.log('右边没有319')
+        }
+        // 从A点向左扫描
+        for (let i = 1; i < 2 + point1[0]; i++) {
+          // console.log('向左扫描366')
+          commonPoint = [point1[0] - i, point1[1]];
+          // console.log(commonPoint, '368')
+          for (let j = 0, len = imgArr.length; j < len; j++) {
+            if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+              // console.log(imgArr[j], commonPoint, '371')
+              isEmptyLeft = false;
+              break;
+            }
+          }
+          // console.log(isEmptyLeft, '373')
+          if (isEmptyLeft) {
+            // console.log('375')
+            if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
+              canLeftLink = true;
+              break;
+            } else {
+              continue;
+            }
+          } else {
+            // console.log('383')
+            break;
+          }
+        }
+        if (canLeftLink) {
+          // console.log('388')
+          return canLeftLink;
+        } else {
+          // console.log('左边没有342')
+        }
+        // 从A点向下扫描
+        for (let i = 1; i < 9 - point1[1]; i++) {
+          // console.log('向下扫描')
+          commonPoint = [point1[0], point1[1] + i];
+          // console.log(commonPoint, '391---commonPoint')
+          for (let j = 0, len = imgArr.length; j < len; j++) {
+            if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+              // console.log(imgArr[j], commonPoint, '395')
+              isEmptyDown = false;
+              break;
+            }
+          }
+          if (isEmptyDown) {
+            // console.log(isEmptyLine(point1, commonPoint), 'isEmptyLine393')
+            // console.log(oneAngleLink(point2, commonPoint), 'oneAngleLink394')
+            if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
+              canDownLink = true;
+              break;
+            } else {
+              continue;
+            }
+          } else {
+            break;
+          }
+        }
+        if (canDownLink) {
+          return canDownLink;
+        } else {
+          // console.log('下边没有365')
+        }
+        // 从A点向上扫描
+        for (let i = 1; i < 2 + point1[1]; i++) {
+          // console.log('向上扫描')
+          commonPoint = [point1[0], point1[1] - i];
+          // console.log(commonPoint, '422')
+          for (let j = 0, len = imgArr.length; j < len; j++) {
+            if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+              // console.log(imgArr[j], commonPoint, '426')
+              isEmptyUp = false;
+              break;
+            }
+          }
+          if (isEmptyUp) {
+            if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
+              canUpLink = true;
+              break;
+            } else {
+              continue;
+            }
+          } else {
+            break;
+          }
+        }
+        if (canUpLink) {
+          return canUpLink;
+        } else {
+          // console.log('上边没有388')
+        }
+        // console.log('不能两折相连390')
+        return false;
+      }
+
+      // 获取鼠标点击坐标
       function getLocation(x, y) {
         var bbox = canvas.getBoundingClientRect();
-
         return {
           x: (x - bbox.left) * (canvas.width / bbox.width),
           y: (y - bbox.top) * (canvas.height / bbox.height)
@@ -367,6 +519,139 @@ export default {
           */
         };
       }
+
+      /*
+      * 鼠标点击事件
+      * 用数组记录两次点击的坐标，存储选中的图片信息
+      * 如果两张图片不一样，则保留最后一次点击的图片坐标
+      */
+      let clickArr = [];
+
+      canvas.onclick = function(e) {
+        self.clickNums++;
+        var location = getLocation(e.clientX, e.clientY);
+        // console.log(~~location.x, ~~location.y)
+        if (location.x < 5 || location.x > 1115 || location.y < 5 || location.y > 635) {
+          clickArr = [];
+        }
+
+        const x = Math.floor((location.x - 5) / self.cell);
+        const y = Math.floor((location.y - 5) / self.cell);
+        clickArr.push([x, y]);
+        if (clickArr.length === 2) {
+          // 如果两次点击同一位置的图片，则只保留一次坐标
+          if (clickArr[0][0] === clickArr[1][0] && clickArr[0][1] === clickArr[1][1]) {
+            clickArr.shift();
+          }
+          // imgArr 为乱序
+          // console.log(clickArr)
+          // 2018.04.26 01:20 接下来判断两次点击的图片颜色名称是否相同
+          let imgSelected1 = [];
+          let imgSelected2 = [];
+          for (let i = 0, len = imgArr.length; i < len; i++) {
+            if (imgArr[i][0] === clickArr[0][0] && imgArr[i][1] === clickArr[0][1]) {
+              imgSelected1 = [...imgArr[i]];
+            }
+            if (imgArr[i][0] === clickArr[1][0] && imgArr[i][1] === clickArr[1][1]) {
+              imgSelected2 = [...imgArr[i]];
+            }
+          }
+
+          // 两次点击的图片相同
+          if (imgSelected1[2] === imgSelected2[2]) {
+            console.log('相同图片503', imgSelected1, imgSelected2);
+            if (imgSelected1[0] === imgSelected2[0] || imgSelected1[1] === imgSelected2[1]) {
+              // 同行或同列
+              if (isEmptyLine(imgSelected1, imgSelected2)) {
+                // console.log('能直线相连482')
+                self.deleteImg(imgArr, imgSelected1, imgSelected2);
+              } else if (doubleAngleLink(imgSelected1, imgSelected2)) {
+                // console.log('能两折相连485')
+                self.deleteImg(imgArr, imgSelected1, imgSelected2);
+              } else {
+                // console.log('不能直线相连488')
+                clickArr.shift();
+                imgSelected1 = [];
+                imgSelected2 = [];
+                return;
+              }
+            } else {
+              // 不在同一直线
+              if (oneAngleLink(imgSelected1, imgSelected2)) {
+                // console.log('能一折相连494')
+                self.deleteImg(imgArr, imgSelected1, imgSelected2);
+              } else if (doubleAngleLink(imgSelected1, imgSelected2)) {
+                // console.log('能两折相连497')
+                self.deleteImg(imgArr, imgSelected1, imgSelected2);
+              } else {
+                // console.log('不能相连500')
+                clickArr.shift();
+                imgSelected1 = [];
+                imgSelected2 = [];
+                return;
+              }
+            }
+
+            // 在删除图片的格子画上默认背景，表示空格子
+            context.fillStyle = 'rgb(179, 225, 240)';
+            context.fillRect(5 + self.cell * imgSelected1[0], 5 + self.cell * imgSelected1[1], self.cell - 10, self.cell - 10);
+            context.fillRect(5 + self.cell * imgSelected2[0], 5 + self.cell * imgSelected2[1], self.cell - 10, self.cell - 10);
+            // console.log(imgArr)
+
+            // 删除相同图片后清空选择数组
+            clickArr = [];
+            imgSelected1 = [];
+            imgSelected2 = [];
+
+            // 下一关
+            if (imgArr.length === 0) {
+              context.fillStyle = 'rgb(179, 225, 240)';
+              context.fillRect(280, 240, 560, 160);
+              context.font = '60px Microsoft Yahei';
+              context.fillText('升级啦！~', 280, 240);
+            }
+
+            // 判断是否死局
+            let existSolution = 0;
+            for (let i = 0, len = imgArr.length; i < len - 1; i++) {
+              for (let j = 1; j < len; j++) {
+                if (isEmptyLine(imgArr[i], imgArr[j]) || oneAngleLink(imgArr[i], imgArr[j]) || doubleAngleLink(imgArr[i], imgArr[j])) {
+                  existSolution++;
+                  break;
+                }
+              }
+              if (existSolution > 0) break;
+            }
+            if (existSolution === 0) self.deadEnd = true;
+            if (self.deadEnd) {
+              // 在有图片的格子上重新布局，取出所有图片，然后随机放回
+              let existImg = [];
+              const len = imgArr.length;
+              for (let k = 0; k < len; k++) {
+                existImg.push(imgArr[k][2]);
+                imgArr[k].splice(2, 1);
+              }
+              existImg.sort(function() {
+                return 0.5 - Math.random();
+              });
+              const img = new Image();
+              for (let m = 0; m < len; m++) {
+                imgArr[m].push(existImg[m]);
+                img.src = require('../assets/images/' + imgArr[m] + '.png');
+                img.onload = function() {
+                  context.drawImage(img, 5 + self.cell * imgArr[m][0], 5 + self.cell * imgArr[m][1], self.cell - 10, self.cell - 10);
+                };
+              }
+              existImg = [];
+            }
+            // 直线相连
+          } else if (imgSelected1[2] !== imgSelected2[2]) {
+            // 两次点击的图片不相同，则只保留最后一次点击的图片位置信息
+            clickArr.shift();
+          }
+        }
+      };
+
       /*
       * 判断可连接情况：
       * 1.只有内容相同的图片才有消除的可能
@@ -374,6 +659,24 @@ export default {
       * 3.两张图片连接时所经过的路径（连接路径）不能超过两个拐点
       * 4.连接路径经过的单元格所包含的图片必须已经消除
       */
+    },
+    deleteImg(imgArr, imgSelected1, imgSelected2) {
+      if (this.remainingTimePercentage >= 98) {
+        this.remainingTimePercentage = 100;
+      } else {
+        this.remainingTimePercentage += 2;
+      }
+      // console.log(imgSelected1, imgSelected2)
+      // 把删除的图片在imgArr里删除
+      imgArr.forEach((element, index) => {
+        if (element[0] === imgSelected1[0] && element[1] === imgSelected1[1]) {
+          imgArr.splice(index, 1);
+        }
+        if (element[0] === imgSelected2[0] && element[1] === imgSelected2[1]) {
+          imgArr.splice(index, 1);
+        }
+      });
+      // console.log(imgArr.length)
     },
     fullScreen() {
       const docElm = document.documentElement;
@@ -412,33 +715,62 @@ export default {
 </script>
 <style lang="scss" scoped>
 div#link-game {
-  /* display: flex;
-  justify-content: center;
-  align-content: center;
-  align-items: center; */
+  width: 100%;
+  height: 100%;
+  padding-top: 20px;
+  div.head-btn, .foot-btn, .control-btn {
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+  }
+  .foot-btn, .control-btn {
+    justify-content: space-between;
+  }
+  span#tips-num {
+    font-size: 20px;
+    font-weight: bold;
+  }
   div.time-line {
-    p.time-outbox {
-      position: relative;
-      display: inline-block;
-      width: 640px;
-      height: 20px;
-      margin: 0;
-      border: 1px solid #ccc;
-      span#time {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 320px;
-        height: 100%;
-        background-color: yellowgreen;
-      }
+    height: 41px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    span {
+      display: inline-flex;
+      justify-content: space-around;
+      align-content: center;
+      align-items: center;
+      font-size: 22px;
     }
   }
-  width: 1400px;
-  height: 1200px;
-    canvas {
-      width: 1120px;
-      height: 640px;
-    }
+  button {
+    margin: 0;
+    font-size: 18px;
+    width: 90px;
+    height: 40px;
+  }
+  .icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-size: cover;
+  }
+  .theme {
+    background-image: url('../assets/icons/theme-light.png');
+  }
+  .bulb {
+    background-image: url('../assets/icons/bulb-light.png');
+  }
+  .full-screen {
+    background-image: url('../assets/icons/fullscreen-light.png');
+  }
+  .pause {
+    background-image: url('../assets/icons/pause-light.png');
+  }
+  .play {
+    background-image: url('../assets/icons/play-light.png');
+  }
 }
 </style>
