@@ -80,6 +80,8 @@
         </a>
       </li>
     </ul>
+    <div>0000000000000<img :src="qrcode" alt=""></div>
+    
   </div>
 </template>
 
@@ -88,8 +90,17 @@ export default {
   name: 'HelloWorld',
   data() {
     return {
+      qrcode: '',
       msg: 'Welcome to Your Vue.js App'
     };
+  },
+  mounted() {
+    this.$http.post('https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=9_viQ2vNDGoY3Lmqxh4OmZs3aG4RNADNNgbBYS7b9ZNQOszoPreFN_pPi1NZTivA6DMywO7TfTxMgEjfarzH3GesDQU5grD0QuRTIeiqBRLiv9wt1bPPI-h6WI1LDAOgdPdqtzWkjJcIfnqozMZTIdAAAMGV', { 'scene': '123', 'page': 'pages/myPage/myPage' }).then(res => {
+      console.log(res.data);
+      this.qrcode = res.data;
+    }).catch(err => {
+      console.log(err);
+    });
   }
 };
 </script>
