@@ -75,7 +75,7 @@ export default {
       this.drawBoard();
     },
     remainingTimePercentage(val) {
-      console.log(val);
+      // console.log(val);
       if (val <= 0) {
         clearInterval(this.countdown);
         const self = this;
@@ -275,7 +275,6 @@ export default {
       function isEmptyLine(point1, point2) {
         let isEmpty = true;
         let min;
-        let max;
         let points;
         if (point1[0] === point2[0]) {
           // console.log('两点同列231')
@@ -286,8 +285,7 @@ export default {
           } else {
             // 同一列
             min = point1[1] < point2[1] ? point1[1] : point2[1];
-            max = point1[1] > point2[1] ? point1[1] : point2[1];
-            points = max - min;
+            points = Math.abs(point1[1] - point2[1]);
             for (let i = 1; i < points; i++) {
               // isEmpty = true
               for (let j = 0, len = imgArr.length; j < len; j++) {
@@ -309,12 +307,12 @@ export default {
           // console.log('两点同行259')
           // 左右相邻
           if (Math.abs(point1[0] - point2[0]) === 1) {
-            return true;
+            isEmpty = true;
+            return isEmpty;
           } else {
             // 同一行
             min = point1[0] < point2[0] ? point1[0] : point2[0];
-            max = point1[0] > point2[0] ? point1[0] : point2[0];
-            points = max - min;
+            points = Math.abs(point1[1] - point2[1]);
             for (let i = 1; i < points; i++) {
               for (let j = 0, len = imgArr.length; j < len; j++) {
                 if (imgArr[j][1] === point1[1] && imgArr[j][0] === min + i) {
@@ -333,7 +331,8 @@ export default {
           }
           return isEmpty;
         } else {
-          return false;
+          isEmpty = false;
+          return isEmpty;
         }
         // return isEmpty
       }
@@ -357,7 +356,7 @@ export default {
             break;
           }
         }
-        if (point3 === [] || point4 === []) {
+        if (point3 === [] && point4 === []) {
           return canLink;
         }
         // console.log('一折相连265')
@@ -444,14 +443,14 @@ export default {
           // console.log('左边没有342')
         }
         // 从A点向下扫描
-        for (let i = 1; i < 9 - point1[1]; i++) {
-          // console.log('向下扫描')
+        for (let i = 1; i < 11 - point1[1]; i++) {
+          console.log(i, isEmptyDown);
           commonPoint = [point1[0], point1[1] + i];
           // console.log(commonPoint, '391---commonPoint')
           for (let j = 0, len = imgArr.length; j < len; j++) {
             if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-              // console.log(imgArr[j], commonPoint, '395')
               isEmptyDown = false;
+              console.log(commonPoint, isEmptyDown);
               break;
             }
           }
@@ -569,7 +568,9 @@ export default {
                 // console.log('能两折相连485')
                 self.deleteImg(imgArr, imgSelected1, imgSelected2);
               } else {
-                // console.log('不能直线相连488')
+                console.log((doubleAngleLink(imgSelected1, imgSelected2)));
+                console.log((isEmptyLine(imgSelected1, imgSelected2)));
+                console.log('不能直线相连488');
                 clickArr.shift();
                 imgSelected1 = [];
                 imgSelected2 = [];
