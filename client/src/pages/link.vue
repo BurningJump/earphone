@@ -282,7 +282,7 @@ export default {
           if (Math.abs(point1[1] - point2[1]) === 1) {
             isEmpty = true;
             return isEmpty;
-          } else {
+          } else if (Math.abs(point1[1] - point2[1]) > 1) {
             // 同一列
             min = point1[1] < point2[1] ? point1[1] : point2[1];
             points = Math.abs(point1[1] - point2[1]);
@@ -309,10 +309,10 @@ export default {
           if (Math.abs(point1[0] - point2[0]) === 1) {
             isEmpty = true;
             return isEmpty;
-          } else {
+          } else if (Math.abs(point1[0] - point2[0]) > 1) {
             // 同一行
             min = point1[0] < point2[0] ? point1[0] : point2[0];
-            points = Math.abs(point1[1] - point2[1]);
+            points = Math.abs(point1[0] - point2[0]);
             for (let i = 1; i < points; i++) {
               for (let j = 0, len = imgArr.length; j < len; j++) {
                 if (imgArr[j][1] === point1[1] && imgArr[j][0] === min + i) {
