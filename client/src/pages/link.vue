@@ -296,13 +296,13 @@ export default {
               }
               // console.log(isEmpty, 'isEmpty249')
               if (!isEmpty) {
-                break;
+                return false;
               } else {
                 continue;
               }
             }
+            return isEmpty;
           }
-          return isEmpty;
         } else if (point1[1] === point2[1]) {
           // console.log('两点同行259')
           // 左右相邻
@@ -323,18 +323,17 @@ export default {
               }
               // console.log(isEmpty, 'isEmpty276')
               if (!isEmpty) {
-                break;
+                return false;
               } else {
                 continue;
               }
             }
+            return isEmpty;
           }
-          return isEmpty;
         } else {
           isEmpty = false;
           return isEmpty;
         }
-        // return isEmpty
       }
 
       // 判断能否一折连接
@@ -344,13 +343,15 @@ export default {
         let point4 = [point2[0], point1[1]];
         // console.log(point3, point4, '293,点3和4')
         for (let i = 0, len = imgArr.length; i < len; i++) {
-          if (imgArr[i][0] === point3[0] && imgArr[i][1] === point3[1]) {
+          if (point3 !== [] && imgArr[i][0] === point3[0] && imgArr[i][1] === point3[1]) {
             // point3上有图片，删除point3
             point3 = [];
+            continue;
           }
-          if (imgArr[i][0] === point4[0] && imgArr[i][1] === point4[1]) {
+          if (point4 !== [] && imgArr[i][0] === point4[0] && imgArr[i][1] === point4[1]) {
             // point3上有图片，删除point3
             point4 = [];
+            continue;
           }
           if (point3 === [] && point4 === []) {
             break;
@@ -384,20 +385,20 @@ export default {
         let isEmptyDown = true;
         let isEmptyUp = true;
         // 从A点向右扫描
-        for (let i = 1; i < 15 - point1[0]; i++) {
+        for (let i = 1; i < 2 - point1[0]; i++) {
           // console.log('向右扫描')
           commonPoint = [point1[0] + i, point1[1]];
           for (let j = 0, len = imgArr.length; j < len; j++) {
             if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-              // console.log(imgArr[j], commonPoint, '339')
               isEmptyRight = false;
+              console.log(imgArr[j], commonPoint, isEmptyRight, '右');
               break;
             }
           }
           if (isEmptyRight) {
             if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
               canRightLink = true;
-              break;
+              return canRightLink;
             } else {
               continue;
             }
@@ -408,7 +409,7 @@ export default {
         if (canRightLink) {
           return canRightLink;
         } else {
-          // console.log('右边没有319')
+          console.log('右边没有319');
         }
         // 从A点向左扫描
         for (let i = 1; i < 2 + point1[0]; i++) {
@@ -417,8 +418,8 @@ export default {
           // console.log(commonPoint, '368')
           for (let j = 0, len = imgArr.length; j < len; j++) {
             if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-              // console.log(imgArr[j], commonPoint, '371')
               isEmptyLeft = false;
+              console.log(commonPoint, imgArr[j], isEmptyLeft, '左');
               break;
             }
           }
@@ -427,12 +428,12 @@ export default {
             // console.log('375')
             if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
               canLeftLink = true;
-              break;
+              return canLeftLink;
             } else {
               continue;
             }
           } else {
-            // console.log('383')
+            console.log('383');
             break;
           }
         }
@@ -440,7 +441,7 @@ export default {
           // console.log('388')
           return canLeftLink;
         } else {
-          // console.log('左边没有342')
+          console.log('左边没有342');
         }
         // 从A点向下扫描
         for (let i = 1; i < 11 - point1[1]; i++) {
@@ -450,7 +451,7 @@ export default {
           for (let j = 0, len = imgArr.length; j < len; j++) {
             if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
               isEmptyDown = false;
-              console.log(commonPoint, isEmptyDown);
+              console.log(commonPoint, imgArr[j], isEmptyDown, '下');
               break;
             }
           }
@@ -459,7 +460,7 @@ export default {
             // console.log(oneAngleLink(point2, commonPoint), 'oneAngleLink394')
             if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
               canDownLink = true;
-              break;
+              return canDownLink;
             } else {
               continue;
             }
@@ -470,7 +471,7 @@ export default {
         if (canDownLink) {
           return canDownLink;
         } else {
-          // console.log('下边没有365')
+          console.log('下边没有365');
         }
         // 从A点向上扫描
         for (let i = 1; i < 2 + point1[1]; i++) {
@@ -479,15 +480,15 @@ export default {
           // console.log(commonPoint, '422')
           for (let j = 0, len = imgArr.length; j < len; j++) {
             if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-              // console.log(imgArr[j], commonPoint, '426')
               isEmptyUp = false;
+              console.log(commonPoint, imgArr[j], isEmptyUp, '上');
               break;
             }
           }
           if (isEmptyUp) {
             if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
               canUpLink = true;
-              break;
+              return canUpLink;
             } else {
               continue;
             }
@@ -498,10 +499,9 @@ export default {
         if (canUpLink) {
           return canUpLink;
         } else {
-          // console.log('上边没有388')
+          console.log('上边没有388');
+          return false;
         }
-        // console.log('不能两折相连390')
-        return false;
       }
 
       // 获取鼠标点击坐标
@@ -561,16 +561,11 @@ export default {
             console.log('相同图片503', imgSelected1, imgSelected2);
             if (imgSelected1[0] === imgSelected2[0] || imgSelected1[1] === imgSelected2[1]) {
               // 同行或同列
-              if (isEmptyLine(imgSelected1, imgSelected2)) {
-                // console.log('能直线相连482')
-                self.deleteImg(imgArr, imgSelected1, imgSelected2);
-              } else if (doubleAngleLink(imgSelected1, imgSelected2)) {
-                // console.log('能两折相连485')
+              if (isEmptyLine(imgSelected1, imgSelected2) || doubleAngleLink(imgSelected1, imgSelected2)) {
+                // console.log('能直线或两折相连485');
                 self.deleteImg(imgArr, imgSelected1, imgSelected2);
               } else {
-                console.log((doubleAngleLink(imgSelected1, imgSelected2)));
-                console.log((isEmptyLine(imgSelected1, imgSelected2)));
-                console.log('不能直线相连488');
+                // console.log('不能直线相连488');
                 clickArr.shift();
                 imgSelected1 = [];
                 imgSelected2 = [];
@@ -578,11 +573,8 @@ export default {
               }
             } else {
               // 不在同一直线
-              if (oneAngleLink(imgSelected1, imgSelected2)) {
-                // console.log('能一折相连494')
-                self.deleteImg(imgArr, imgSelected1, imgSelected2);
-              } else if (doubleAngleLink(imgSelected1, imgSelected2)) {
-                // console.log('能两折相连497')
+              if (oneAngleLink(imgSelected1, imgSelected2) || doubleAngleLink(imgSelected1, imgSelected2)) {
+                // console.log('能一折或两折相连497');
                 self.deleteImg(imgArr, imgSelected1, imgSelected2);
               } else {
                 // console.log('不能相连500')
@@ -625,6 +617,7 @@ export default {
             }
             if (existSolution === 0) self.deadEnd = true;
             if (self.deadEnd) {
+              window.alert('死局，重新布局');
               // 在有图片的格子上重新布局，取出所有图片，然后随机放回
               let existImg = [];
               const len = imgArr.length;
@@ -638,7 +631,7 @@ export default {
               const img = new Image();
               for (let m = 0; m < len; m++) {
                 imgArr[m].push(existImg[m]);
-                img.src = require('../assets/images/' + imgArr[m] + '.png');
+                img.src = require('../assets/images/' + imgArr[m][2] + '.png');
                 img.onload = function() {
                   context.drawImage(img, 5 + self.cell * imgArr[m][0], 5 + self.cell * imgArr[m][1], self.cell - 10, self.cell - 10);
                 };
