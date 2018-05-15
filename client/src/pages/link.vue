@@ -398,7 +398,7 @@ export default {
           if (isEmptyRight) {
             if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
               canRightLink = true;
-              return canRightLink;
+              return true;
             } else {
               continue;
             }
@@ -407,100 +407,100 @@ export default {
           }
         }
         if (canRightLink) {
-          return canRightLink;
+          return true;
         } else {
           console.log('右边没有319');
-        }
-        // 从A点向左扫描
-        for (let i = 1; i < 2 + point1[0]; i++) {
-          // console.log('向左扫描366')
-          commonPoint = [point1[0] - i, point1[1]];
-          // console.log(commonPoint, '368')
-          for (let j = 0, len = imgArr.length; j < len; j++) {
-            if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-              isEmptyLeft = false;
-              console.log(commonPoint, imgArr[j], isEmptyLeft, '左');
+          // 从A点向左扫描
+          for (let i = 1; i < 2 + point1[0]; i++) {
+            // console.log('向左扫描366')
+            commonPoint = [point1[0] - i, point1[1]];
+            // console.log(commonPoint, '368')
+            for (let j = 0, len = imgArr.length; j < len; j++) {
+              if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+                isEmptyLeft = false;
+                console.log(commonPoint, imgArr[j], isEmptyLeft, '左');
+                break;
+              }
+            }
+            // console.log(isEmptyLeft, '373')
+            if (isEmptyLeft) {
+              // console.log('375')
+              if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
+                canLeftLink = true;
+                return true;
+              } else {
+                continue;
+              }
+            } else {
+              console.log('383');
               break;
             }
           }
-          // console.log(isEmptyLeft, '373')
-          if (isEmptyLeft) {
-            // console.log('375')
-            if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
-              canLeftLink = true;
-              return canLeftLink;
-            } else {
-              continue;
-            }
+          if (canLeftLink) {
+            // console.log('388')
+            return true;
           } else {
-            console.log('383');
-            break;
-          }
-        }
-        if (canLeftLink) {
-          // console.log('388')
-          return canLeftLink;
-        } else {
-          console.log('左边没有342');
-        }
-        // 从A点向下扫描
-        for (let i = 1; i < 11 - point1[1]; i++) {
-          console.log(i, isEmptyDown);
-          commonPoint = [point1[0], point1[1] + i];
-          // console.log(commonPoint, '391---commonPoint')
-          for (let j = 0, len = imgArr.length; j < len; j++) {
-            if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-              isEmptyDown = false;
-              console.log(commonPoint, imgArr[j], isEmptyDown, '下');
-              break;
+            console.log('左边没有342');
+            // 从A点向下扫描
+            for (let i = 1; i < 11 - point1[1]; i++) {
+              console.log(i, isEmptyDown);
+              commonPoint = [point1[0], point1[1] + i];
+              // console.log(commonPoint, '391---commonPoint')
+              for (let j = 0, len = imgArr.length; j < len; j++) {
+                if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+                  isEmptyDown = false;
+                  console.log(commonPoint, imgArr[j], isEmptyDown, '下');
+                  break;
+                }
+              }
+              if (isEmptyDown) {
+                // console.log(isEmptyLine(point1, commonPoint), 'isEmptyLine393')
+                // console.log(oneAngleLink(point2, commonPoint), 'oneAngleLink394')
+                if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
+                  canDownLink = true;
+                  return true;
+                } else {
+                  continue;
+                }
+              } else {
+                break;
+              }
             }
-          }
-          if (isEmptyDown) {
-            // console.log(isEmptyLine(point1, commonPoint), 'isEmptyLine393')
-            // console.log(oneAngleLink(point2, commonPoint), 'oneAngleLink394')
-            if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
-              canDownLink = true;
-              return canDownLink;
+            if (canDownLink) {
+              return true;
             } else {
-              continue;
+              console.log('下边没有365');
+              // 从A点向上扫描
+              for (let i = 1; i < 2 + point1[1]; i++) {
+                // console.log('向上扫描')
+                commonPoint = [point1[0], point1[1] - i];
+                // console.log(commonPoint, '422')
+                for (let j = 0, len = imgArr.length; j < len; j++) {
+                  if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+                    isEmptyUp = false;
+                    console.log(commonPoint, imgArr[j], isEmptyUp, '上');
+                    break;
+                  }
+                }
+                if (isEmptyUp) {
+                  if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
+                    canUpLink = true;
+                    return true;
+                  } else {
+                    continue;
+                  }
+                } else {
+                  break;
+                }
+              }
+              if (canUpLink) {
+                return true;
+              } else {
+                console.log('上边没有388');
+                return false;
+              }
             }
-          } else {
-            break;
           }
-        }
-        if (canDownLink) {
-          return canDownLink;
-        } else {
-          console.log('下边没有365');
-        }
-        // 从A点向上扫描
-        for (let i = 1; i < 2 + point1[1]; i++) {
-          // console.log('向上扫描')
-          commonPoint = [point1[0], point1[1] - i];
-          // console.log(commonPoint, '422')
-          for (let j = 0, len = imgArr.length; j < len; j++) {
-            if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-              isEmptyUp = false;
-              console.log(commonPoint, imgArr[j], isEmptyUp, '上');
-              break;
-            }
-          }
-          if (isEmptyUp) {
-            if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
-              canUpLink = true;
-              return canUpLink;
-            } else {
-              continue;
-            }
-          } else {
-            break;
-          }
-        }
-        if (canUpLink) {
-          return canUpLink;
-        } else {
-          console.log('上边没有388');
-          return false;
         }
       }
 
