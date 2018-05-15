@@ -385,7 +385,7 @@ export default {
         let isEmptyDown = true;
         let isEmptyUp = true;
         // 从A点向右扫描
-        for (let i = 1; i < 2 - point1[0]; i++) {
+        for (let i = 1; i < Math.abs(15 - point1[0]); i++) {
           // console.log('向右扫描')
           commonPoint = [point1[0] + i, point1[1]];
           for (let j = 0, len = imgArr.length; j < len; j++) {
@@ -442,7 +442,7 @@ export default {
           } else {
             console.log('左边没有342');
             // 从A点向下扫描
-            for (let i = 1; i < 11 - point1[1]; i++) {
+            for (let i = 1; i < Math.abs(11 - point1[1]); i++) {
               console.log(i, isEmptyDown);
               commonPoint = [point1[0], point1[1] + i];
               // console.log(commonPoint, '391---commonPoint')
