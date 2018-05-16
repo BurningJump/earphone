@@ -16,7 +16,7 @@
     <div class="control-btn" :style="{width:width + 'px'}">
       <el-button type="primary" size="small" v-show="!paused" @click="pause"><i class="icon pause"></i>暂停</el-button>
       <el-button type="primary" size="small" v-show="paused" @click="pause"><i class="icon play"></i>开始</el-button>
-      <span id="tips-num">提示数 {{tips}} <el-button type="info" size="small" icon="el-icon-search" @click="showTip">提示</el-button></span>
+      <span id="hints-num">提示数 {{hints}} <el-button type="info" size="small" icon="el-icon-search" @click="showHint" :disabled="noHints">提示</el-button></span>
     </div>
     <div class="foot-btn" :style="{width:width + 'px'}">
       <el-button type="danger" size="small" icon="el-icon-refresh" @click="drawBoard">重玩</el-button>
@@ -35,7 +35,8 @@ export default {
       time: 180,
       countdown: null,
       remainingTimePercentage: 100,
-      tips: 6,
+      hints: 6,
+      noHints: false,
       score: 0,
       level: 1,
       dark: false,
@@ -700,9 +701,41 @@ export default {
         document.msExitFullscreen();
       }
     },
-    showTip() {
-      if (this.tips === 0) { return; }
-      this.tips--;
+    highlightGrid(context, arr) {
+      context.save();
+      context.strokeStyle = 'red';
+      // context.lineWidth = 3;
+      // 高亮外框
+      context.strokeRect(5 + this.cell * arr[0], 5 + this.cell * arr[1], this.cell - 10, this.cell - 10);
+      context.restore();
+    },
+    restoreGrid(context, arr) {
+      context.save();
+      context.strokeStyle = '#000';
+      context.strokeRect(5 + this.cell * arr[0], 5 + this.cell * arr[1], this.cell - 10, this.cell - 10);
+      context.restore();
+    },
+    showHint(context, imgArr) {
+      if (this.hints === 0) {
+        noHints = true;
+        return;
+      } else {
+        let highlightGrid = [];
+        for (let i = 0, len = imgArr.length; i < len - 1; i++) {
+          for (let j = 1; j < len; j++) {
+            if (isEmptyLine(imgArr[i], imgArr[j]) || oneAngleLink(imgArr[i], imgArr[j]) || doubleAngleLink(imgArr[i], imgArr[j])) {
+              // console.log(imgArr[i], imgArr[j]);
+              highlightGrid.push(imgArr[i], imgArr[j]);
+              existSolution++;
+              break;
+            }
+          }
+          if (highlightGrid.length > 0) break;
+        }
+        highlightGrid(context, highlightGrid[0]);
+        highlightGrid(context, highlightGrid[1]);
+        this.hints--;
+      }
     }
   }
 };
@@ -720,7 +753,7 @@ div#link-game {
   .foot-btn, .control-btn {
     justify-content: space-between;
   }
-  span#tips-num {
+  span#hints-num {
     font-size: 20px;
     font-weight: bold;
   }
