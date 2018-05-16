@@ -385,7 +385,7 @@ export default {
         let isEmptyDown = true;
         let isEmptyUp = true;
         // 从A点向右扫描
-        for (let i = 1; i < Math.abs(15 - point1[0]); i++) {
+        for (let i = 1; i < 15 - point1[0]; i++) {
           // console.log('向右扫描')
           commonPoint = [point1[0] + i, point1[1]];
           for (let j = 0, len = imgArr.length; j < len; j++) {
@@ -442,7 +442,7 @@ export default {
           } else {
             console.log('左边没有342');
             // 从A点向下扫描
-            for (let i = 1; i < Math.abs(11 - point1[1]); i++) {
+            for (let i = 1; i < 11 - point1[1]; i++) {
               console.log(i, isEmptyDown);
               commonPoint = [point1[0], point1[1] + i];
               // console.log(commonPoint, '391---commonPoint')
@@ -563,10 +563,11 @@ export default {
               // 同行或同列
               if (isEmptyLine(imgSelected1, imgSelected2) || doubleAngleLink(imgSelected1, imgSelected2)) {
                 // console.log('能直线或两折相连485');
-                self.deleteImg(imgArr, imgSelected1, imgSelected2);
+                self.deleteImg(imgArr, imgSelected1);
+                self.deleteImg(imgArr, imgSelected2);
               } else {
                 // console.log('不能直线相连488');
-                clickArr.shift();
+                clickArr = [];
                 imgSelected1 = [];
                 imgSelected2 = [];
                 return;
@@ -575,10 +576,11 @@ export default {
               // 不在同一直线
               if (oneAngleLink(imgSelected1, imgSelected2) || doubleAngleLink(imgSelected1, imgSelected2)) {
                 // console.log('能一折或两折相连497');
-                self.deleteImg(imgArr, imgSelected1, imgSelected2);
+                self.deleteImg(imgArr, imgSelected1);
+                self.deleteImg(imgArr, imgSelected2);
               } else {
                 // console.log('不能相连500')
-                clickArr.shift();
+                clickArr = [];
                 imgSelected1 = [];
                 imgSelected2 = [];
                 return;
@@ -654,7 +656,7 @@ export default {
       * 4.连接路径经过的单元格所包含的图片必须已经消除
       */
     },
-    deleteImg(imgArr, imgSelected1, imgSelected2) {
+    deleteImg(imgArr, imgSelected) {
       if (this.remainingTimePercentage >= 98) {
         this.remainingTimePercentage = 100;
       } else {
@@ -662,14 +664,12 @@ export default {
       }
       // console.log(imgSelected1, imgSelected2)
       // 把删除的图片在imgArr里删除
-      imgArr.forEach((element, index) => {
-        if (element[0] === imgSelected1[0] && element[1] === imgSelected1[1]) {
-          imgArr.splice(index, 1);
+      for (var i = 0, len = imgArr.length; i < len; i++) {
+        if (imgArr[i][0] === imgSelected[0] && imgArr[i][1] === imgSelected[1]) {
+          imgArr.splice(i, 1);
+          break;
         }
-        if (element[0] === imgSelected2[0] && element[1] === imgSelected2[1]) {
-          imgArr.splice(index, 1);
-        }
-      });
+      }
       // console.log(imgArr.length)
     },
     fullScreen() {
