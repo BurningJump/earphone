@@ -137,6 +137,236 @@ export default {
       }
       this.paused = !this.paused;
     },
+    isEmptyLine(point1, point2, imgArr) {
+      // 判断两点之间是否为空，point = [x, y]
+      let isEmpty = true;
+      let min;
+      let points;
+      if (point1[0] === point2[0]) {
+        // console.log('两点同列231')
+        // 上下相邻
+        if (Math.abs(point1[1] - point2[1]) === 1) {
+          isEmpty = true;
+          return true;
+        } else if (Math.abs(point1[1] - point2[1]) > 1) {
+          // 同一列
+          min = point1[1] < point2[1] ? point1[1] : point2[1];
+          points = Math.abs(point1[1] - point2[1]);
+          for (let i = 1; i < points; i++) {
+            // isEmpty = true
+            for (let j = 0, len = imgArr.length; j < len; j++) {
+              if (imgArr[j][0] === point1[0] && imgArr[j][1] === min + i) {
+                isEmpty = false;
+                break;
+              }
+            }
+            // console.log(isEmpty, 'isEmpty249')
+            if (!isEmpty) {
+              return false;
+            } else {
+              continue;
+            }
+          }
+          return isEmpty;
+        }
+      } else if (point1[1] === point2[1]) {
+        // console.log('两点同行259')
+        // 左右相邻
+        if (Math.abs(point1[0] - point2[0]) === 1) {
+          isEmpty = true;
+          return true;
+        } else if (Math.abs(point1[0] - point2[0]) > 1) {
+          // 同一行
+          min = point1[0] < point2[0] ? point1[0] : point2[0];
+          points = Math.abs(point1[0] - point2[0]);
+          for (let i = 1; i < points; i++) {
+            for (let j = 0, len = imgArr.length; j < len; j++) {
+              if (imgArr[j][1] === point1[1] && imgArr[j][0] === min + i) {
+                // console.log(imgArr[j], '271---')
+                isEmpty = false;
+                break;
+              }
+            }
+            // console.log(isEmpty, 'isEmpty276')
+            if (!isEmpty) {
+              return false;
+            } else {
+              continue;
+            }
+          }
+          return isEmpty;
+        }
+      } else {
+        isEmpty = false;
+        return false;
+      }
+    },
+    oneAngleLink(point1, point2, imgArr) {
+      // 判断能否一折连接
+      let canLink = false;
+      let point3 = [point1[0], point2[1]];
+      let point4 = [point2[0], point1[1]];
+      // console.log(point3, point4, '293,点3和4')
+      for (let i = 0, len = imgArr.length; i < len; i++) {
+        if (point3 !== [] && imgArr[i][0] === point3[0] && imgArr[i][1] === point3[1]) {
+          // point3上有图片，删除point3
+          point3 = [];
+          continue;
+        }
+        if (point4 !== [] && imgArr[i][0] === point4[0] && imgArr[i][1] === point4[1]) {
+          // point3上有图片，删除point3
+          point4 = [];
+          continue;
+        }
+        if (point3 === [] && point4 === []) {
+          break;
+        }
+      }
+      if (point3 === [] && point4 === []) {
+        return canLink;
+      }
+      // console.log('一折相连265')
+      // console.log(point3, point4, '311,点3和4')
+      if ((point3 !== [] && this.isEmptyLine(point1, point3, imgArr) && this.isEmptyLine(point2, point3, imgArr)) || (point4 !== [] && this.isEmptyLine(point1, point4, imgArr) && this.isEmptyLine(point2, point4, imgArr))) {
+        canLink = true;
+      } else {
+        // console.log('不能一折相连271')
+        canLink = false;
+      }
+      return canLink;
+    },
+    doubleAngleLink(point1, point2, imgArr) {
+      // 判断能否两折连接，可以转化为判断能否找到一个C单元格，该C单元格可以与A单元格0折连接，
+      // 且C与B可以1折连接。若能找到这样一个C单元格，那么A与B就可以2折连接
+      // if (isEmptyLine(point1, point2) || oneAngleLink(point1, point2)) return false
+      let commonPoint = [];
+      let canRightLink = false;
+      let canLeftLink = false;
+      let canDownLink = false;
+      let canUpLink = false;
+      let isEmptyRight = true;
+      let isEmptyLeft = true;
+      let isEmptyDown = true;
+      let isEmptyUp = true;
+      // 从A点向右扫描
+      for (let i = 1; i < 15 - point1[0]; i++) {
+        // console.log('向右扫描')
+        commonPoint = [point1[0] + i, point1[1]];
+        for (let j = 0, len = imgArr.length; j < len; j++) {
+          if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+            isEmptyRight = false;
+            console.log(imgArr[j], commonPoint, isEmptyRight, '右');
+            break;
+          }
+        }
+        if (isEmptyRight) {
+          if (this.isEmptyLine(point1, commonPoint, imgArr) && this.oneAngleLink(point2, commonPoint, imgArr)) {
+            canRightLink = true;
+            return true;
+          } else {
+            continue;
+          }
+        } else {
+          break;
+        }
+      }
+      if (canRightLink) {
+        return true;
+      } else {
+        console.log('右边没有319');
+        // 从A点向左扫描
+        for (let i = 1; i < 2 + point1[0]; i++) {
+          // console.log('向左扫描366')
+          commonPoint = [point1[0] - i, point1[1]];
+          // console.log(commonPoint, '368')
+          for (let j = 0, len = imgArr.length; j < len; j++) {
+            if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+              isEmptyLeft = false;
+              console.log(commonPoint, imgArr[j], isEmptyLeft, '左');
+              break;
+            }
+          }
+          // console.log(isEmptyLeft, '373')
+          if (isEmptyLeft) {
+            // console.log('375')
+            if (this.isEmptyLine(point1, commonPoint, imgArr) && this.oneAngleLink(point2, commonPoint, imgArr)) {
+              canLeftLink = true;
+              return true;
+            } else {
+              continue;
+            }
+          } else {
+            console.log('383');
+            break;
+          }
+        }
+        if (canLeftLink) {
+          // console.log('388')
+          return true;
+        } else {
+          console.log('左边没有342');
+          // 从A点向下扫描
+          for (let i = 1; i < 11 - point1[1]; i++) {
+            console.log(i, isEmptyDown);
+            commonPoint = [point1[0], point1[1] + i];
+            // console.log(commonPoint, '391---commonPoint')
+            for (let j = 0, len = imgArr.length; j < len; j++) {
+              if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+                isEmptyDown = false;
+                console.log(commonPoint, imgArr[j], isEmptyDown, '下');
+                break;
+              }
+            }
+            if (isEmptyDown) {
+              // console.log(isEmptyLine(point1, commonPoint), 'isEmptyLine393')
+              // console.log(oneAngleLink(point2, commonPoint), 'oneAngleLink394')
+              if (this.isEmptyLine(point1, commonPoint, imgArr) && this.oneAngleLink(point2, commonPoint, imgArr)) {
+                canDownLink = true;
+                return true;
+              } else {
+                continue;
+              }
+            } else {
+              break;
+            }
+          }
+          if (canDownLink) {
+            return true;
+          } else {
+            console.log('下边没有365');
+            // 从A点向上扫描
+            for (let i = 1; i < 2 + point1[1]; i++) {
+              // console.log('向上扫描')
+              commonPoint = [point1[0], point1[1] - i];
+              // console.log(commonPoint, '422')
+              for (let j = 0, len = imgArr.length; j < len; j++) {
+                if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
+                  isEmptyUp = false;
+                  console.log(commonPoint, imgArr[j], isEmptyUp, '上');
+                  break;
+                }
+              }
+              if (isEmptyUp) {
+                if (this.isEmptyLine(point1, commonPoint, imgArr) && this.oneAngleLink(point2, commonPoint, imgArr)) {
+                  canUpLink = true;
+                  return true;
+                } else {
+                  continue;
+                }
+              } else {
+                break;
+              }
+            }
+            if (canUpLink) {
+              return true;
+            } else {
+              console.log('上边没有388');
+              return false;
+            }
+          }
+        }
+      }
+    },
     drawBoard() {
       const self = this;
       clearInterval(self.countdown);
@@ -272,239 +502,6 @@ export default {
       });
       // console.log(imgArr)
 
-      // 判断两点之间是否为空，point = [x, y]
-      function isEmptyLine(point1, point2) {
-        let isEmpty = true;
-        let min;
-        let points;
-        if (point1[0] === point2[0]) {
-          // console.log('两点同列231')
-          // 上下相邻
-          if (Math.abs(point1[1] - point2[1]) === 1) {
-            isEmpty = true;
-            return isEmpty;
-          } else if (Math.abs(point1[1] - point2[1]) > 1) {
-            // 同一列
-            min = point1[1] < point2[1] ? point1[1] : point2[1];
-            points = Math.abs(point1[1] - point2[1]);
-            for (let i = 1; i < points; i++) {
-              // isEmpty = true
-              for (let j = 0, len = imgArr.length; j < len; j++) {
-                if (imgArr[j][0] === point1[0] && imgArr[j][1] === min + i) {
-                  isEmpty = false;
-                  break;
-                }
-              }
-              // console.log(isEmpty, 'isEmpty249')
-              if (!isEmpty) {
-                return false;
-              } else {
-                continue;
-              }
-            }
-            return isEmpty;
-          }
-        } else if (point1[1] === point2[1]) {
-          // console.log('两点同行259')
-          // 左右相邻
-          if (Math.abs(point1[0] - point2[0]) === 1) {
-            isEmpty = true;
-            return isEmpty;
-          } else if (Math.abs(point1[0] - point2[0]) > 1) {
-            // 同一行
-            min = point1[0] < point2[0] ? point1[0] : point2[0];
-            points = Math.abs(point1[0] - point2[0]);
-            for (let i = 1; i < points; i++) {
-              for (let j = 0, len = imgArr.length; j < len; j++) {
-                if (imgArr[j][1] === point1[1] && imgArr[j][0] === min + i) {
-                  // console.log(imgArr[j], '271---')
-                  isEmpty = false;
-                  break;
-                }
-              }
-              // console.log(isEmpty, 'isEmpty276')
-              if (!isEmpty) {
-                return false;
-              } else {
-                continue;
-              }
-            }
-            return isEmpty;
-          }
-        } else {
-          isEmpty = false;
-          return isEmpty;
-        }
-      }
-
-      // 判断能否一折连接
-      function oneAngleLink(point1, point2) {
-        let canLink = false;
-        let point3 = [point1[0], point2[1]];
-        let point4 = [point2[0], point1[1]];
-        // console.log(point3, point4, '293,点3和4')
-        for (let i = 0, len = imgArr.length; i < len; i++) {
-          if (point3 !== [] && imgArr[i][0] === point3[0] && imgArr[i][1] === point3[1]) {
-            // point3上有图片，删除point3
-            point3 = [];
-            continue;
-          }
-          if (point4 !== [] && imgArr[i][0] === point4[0] && imgArr[i][1] === point4[1]) {
-            // point3上有图片，删除point3
-            point4 = [];
-            continue;
-          }
-          if (point3 === [] && point4 === []) {
-            break;
-          }
-        }
-        if (point3 === [] && point4 === []) {
-          return canLink;
-        }
-        // console.log('一折相连265')
-        // console.log(point3, point4, '311,点3和4')
-        if ((point3 !== [] && isEmptyLine(point1, point3) && isEmptyLine(point2, point3)) || (point4 !== [] && isEmptyLine(point1, point4) && isEmptyLine(point2, point4))) {
-          canLink = true;
-        } else {
-          // console.log('不能一折相连271')
-          canLink = false;
-        }
-        return canLink;
-      }
-
-      // 判断能否两折连接，可以转化为判断能否找到一个C单元格，该C单元格可以与A单元格0折连接，
-      // 且C与B可以1折连接。若能找到这样一个C单元格，那么A与B就可以2折连接
-      function doubleAngleLink(point1, point2) {
-        // if (isEmptyLine(point1, point2) || oneAngleLink(point1, point2)) return false
-        let commonPoint = [];
-        let canRightLink = false;
-        let canLeftLink = false;
-        let canDownLink = false;
-        let canUpLink = false;
-        let isEmptyRight = true;
-        let isEmptyLeft = true;
-        let isEmptyDown = true;
-        let isEmptyUp = true;
-        // 从A点向右扫描
-        for (let i = 1; i < 15 - point1[0]; i++) {
-          // console.log('向右扫描')
-          commonPoint = [point1[0] + i, point1[1]];
-          for (let j = 0, len = imgArr.length; j < len; j++) {
-            if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-              isEmptyRight = false;
-              console.log(imgArr[j], commonPoint, isEmptyRight, '右');
-              break;
-            }
-          }
-          if (isEmptyRight) {
-            if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
-              canRightLink = true;
-              return true;
-            } else {
-              continue;
-            }
-          } else {
-            break;
-          }
-        }
-        if (canRightLink) {
-          return true;
-        } else {
-          console.log('右边没有319');
-          // 从A点向左扫描
-          for (let i = 1; i < 2 + point1[0]; i++) {
-            // console.log('向左扫描366')
-            commonPoint = [point1[0] - i, point1[1]];
-            // console.log(commonPoint, '368')
-            for (let j = 0, len = imgArr.length; j < len; j++) {
-              if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-                isEmptyLeft = false;
-                console.log(commonPoint, imgArr[j], isEmptyLeft, '左');
-                break;
-              }
-            }
-            // console.log(isEmptyLeft, '373')
-            if (isEmptyLeft) {
-              // console.log('375')
-              if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
-                canLeftLink = true;
-                return true;
-              } else {
-                continue;
-              }
-            } else {
-              console.log('383');
-              break;
-            }
-          }
-          if (canLeftLink) {
-            // console.log('388')
-            return true;
-          } else {
-            console.log('左边没有342');
-            // 从A点向下扫描
-            for (let i = 1; i < 11 - point1[1]; i++) {
-              console.log(i, isEmptyDown);
-              commonPoint = [point1[0], point1[1] + i];
-              // console.log(commonPoint, '391---commonPoint')
-              for (let j = 0, len = imgArr.length; j < len; j++) {
-                if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-                  isEmptyDown = false;
-                  console.log(commonPoint, imgArr[j], isEmptyDown, '下');
-                  break;
-                }
-              }
-              if (isEmptyDown) {
-                // console.log(isEmptyLine(point1, commonPoint), 'isEmptyLine393')
-                // console.log(oneAngleLink(point2, commonPoint), 'oneAngleLink394')
-                if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
-                  canDownLink = true;
-                  return true;
-                } else {
-                  continue;
-                }
-              } else {
-                break;
-              }
-            }
-            if (canDownLink) {
-              return true;
-            } else {
-              console.log('下边没有365');
-              // 从A点向上扫描
-              for (let i = 1; i < 2 + point1[1]; i++) {
-                // console.log('向上扫描')
-                commonPoint = [point1[0], point1[1] - i];
-                // console.log(commonPoint, '422')
-                for (let j = 0, len = imgArr.length; j < len; j++) {
-                  if (imgArr[j][0] === commonPoint[0] && imgArr[j][1] === commonPoint[1]) {
-                    isEmptyUp = false;
-                    console.log(commonPoint, imgArr[j], isEmptyUp, '上');
-                    break;
-                  }
-                }
-                if (isEmptyUp) {
-                  if (isEmptyLine(point1, commonPoint) && oneAngleLink(point2, commonPoint)) {
-                    canUpLink = true;
-                    return true;
-                  } else {
-                    continue;
-                  }
-                } else {
-                  break;
-                }
-              }
-              if (canUpLink) {
-                return true;
-              } else {
-                console.log('上边没有388');
-                return false;
-              }
-            }
-          }
-        }
-      }
-
       // 获取鼠标点击坐标
       function getLocation(x, y) {
         var bbox = canvas.getBoundingClientRect();
@@ -562,7 +559,7 @@ export default {
             console.log('相同图片503', imgSelected1, imgSelected2);
             if (imgSelected1[0] === imgSelected2[0] || imgSelected1[1] === imgSelected2[1]) {
               // 同行或同列
-              if (isEmptyLine(imgSelected1, imgSelected2) || doubleAngleLink(imgSelected1, imgSelected2)) {
+              if (self.isEmptyLine(imgSelected1, imgSelected2, imgArr) || self.doubleAngleLink(imgSelected1, imgSelected2, imgArr)) {
                 // console.log('能直线或两折相连485');
                 self.deleteImg(imgArr, imgSelected1);
                 self.deleteImg(imgArr, imgSelected2);
@@ -575,7 +572,7 @@ export default {
               }
             } else {
               // 不在同一直线
-              if (oneAngleLink(imgSelected1, imgSelected2) || doubleAngleLink(imgSelected1, imgSelected2)) {
+              if (self.oneAngleLink(imgSelected1, imgSelected2, imgArr) || self.doubleAngleLink(imgSelected1, imgSelected2, imgArr)) {
                 // console.log('能一折或两折相连497');
                 self.deleteImg(imgArr, imgSelected1);
                 self.deleteImg(imgArr, imgSelected2);
@@ -601,24 +598,28 @@ export default {
 
             // 下一关
             if (imgArr.length === 0) {
-              context.fillStyle = 'rgb(179, 225, 240)';
-              context.fillRect(280, 240, 560, 160);
-              context.font = '60px Microsoft Yahei';
-              context.fillText('升级啦！~', 280, 240);
+              self.$confirm('恭喜过关, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+              }).then(() => {
+                self.drawBoard();
+              });
             }
 
             // 判断是否死局
             let existSolution = 0;
             for (let i = 0, len = imgArr.length; i < len - 1; i++) {
               for (let j = 1; j < len; j++) {
-                if (isEmptyLine(imgArr[i], imgArr[j]) || oneAngleLink(imgArr[i], imgArr[j]) || doubleAngleLink(imgArr[i], imgArr[j])) {
+                if (self.isEmptyLine(imgArr[i], imgArr[j], imgArr) || self.oneAngleLink(imgArr[i], imgArr[j], imgArr) || self.doubleAngleLink(imgArr[i], imgArr[j], imgArr)) {
                   existSolution++;
                   break;
                 }
               }
               if (existSolution > 0) break;
             }
-            if (existSolution === 0) self.deadEnd = true;
+            if (existSolution === 0 && imgArr.length !== 0) self.deadEnd = true;
             if (self.deadEnd) {
               window.alert('死局，重新布局');
               // 在有图片的格子上重新布局，取出所有图片，然后随机放回
@@ -717,23 +718,23 @@ export default {
     },
     showHint(context, imgArr) {
       if (this.hints === 0) {
-        noHints = true;
+        this.noHints = true;
         return;
       } else {
-        let highlightGrid = [];
+        const highlightImg = [];
         for (let i = 0, len = imgArr.length; i < len - 1; i++) {
           for (let j = 1; j < len; j++) {
-            if (isEmptyLine(imgArr[i], imgArr[j]) || oneAngleLink(imgArr[i], imgArr[j]) || doubleAngleLink(imgArr[i], imgArr[j])) {
+            if (this.isEmptyLine(imgArr[i], imgArr[j], imgArr) || this.oneAngleLink(imgArr[i], imgArr[j], imgArr) || this.doubleAngleLink(imgArr[i], imgArr[j], imgArr)) {
               // console.log(imgArr[i], imgArr[j]);
-              highlightGrid.push(imgArr[i], imgArr[j]);
-              existSolution++;
+              highlightImg.push(imgArr[i], imgArr[j]);
+              // existSolution++;
               break;
             }
           }
-          if (highlightGrid.length > 0) break;
+          if (highlightImg.length > 0) break;
         }
-        highlightGrid(context, highlightGrid[0]);
-        highlightGrid(context, highlightGrid[1]);
+        this.highlightGrid(context, highlightImg[0]);
+        this.highlightGrid(context, highlightImg[1]);
         this.hints--;
       }
     }
