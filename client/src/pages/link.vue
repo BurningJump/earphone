@@ -391,36 +391,36 @@ export default {
 
       // 绘制图片
       const levelOne = [
-        'DeepPink',
-        'Plum',
-        'MidnightBlue',
-        'Aquamarine',
-        'MediumAquaMarine',
-        'Yellow',
-        'SpringGreen',
-        'Black',
-        'Maroon',
-        'Blue',
-        'Gold',
-        'Brown',
-        'BurlyWood',
-        'CadetBlue',
-        'Chartreuse',
-        'Chocolate',
-        'Coral',
-        'CornflowerBlue',
-        'Cornsilk',
-        'Crimson',
-        'Red',
-        'DarkBlue',
-        'DarkCyan',
-        'DarkGoldenRod',
-        'DarkGray',
-        'DarkGreen',
-        'DarkKhaki',
-        'DarkMagenta',
-        'DarkOliveGreen',
-        'Darkorange'
+        'airdrop.png',
+        'airplay.png',
+        'android.png',
+        'appstore.png',
+        'calculator.png',
+        'calendar.png',
+        'camera.png',
+        'candybar.png',
+        'clock.png',
+        'compass.png',
+        'contacts.png',
+        'contol.png',
+        'facetime.png',
+        'find-friends.png',
+        'find-my-iphone.png',
+        'finder.png',
+        'games.png',
+        'gmail.png',
+        'google-app.png',
+        'google-chrome.png',
+        'google-drive.png',
+        'google-earth.png',
+        'google-maps.png',
+        'google-plus.png',
+        'hangouts.png',
+        'home.png',
+        'ibooks.png',
+        'icloud-apps.png',
+        'icloud-key.png',
+        'icloud-lock.png'
       ];
       /* const levelTwo = [
         'AliceBlue',
@@ -456,7 +456,7 @@ export default {
       levelOne.forEach((element, index) => {
         const img = new Image();
 
-        img.src = require('../assets/images/' + element + '.png');
+        img.src = require('../assets/appicons/' + element);
         // 随机抽两个格子
         const index1 = Math.floor(Math.random() * coordinate.length);
         const x1 = coordinate[index1][0];
@@ -491,7 +491,7 @@ export default {
         imgArr.push([x4, y4, levelOne[levelIndex]]);
         const img = new Image();
 
-        img.src = require('../assets/images/' + levelOne[levelIndex] + '.png');
+        img.src = require('../assets/appicons/' + levelOne[levelIndex]);
         img.onload = function() {
           context.drawImage(img, 5 + self.cell * x3, 5 + self.cell * y3, self.cell - 10, self.cell - 10);
           context.drawImage(img, 5 + self.cell * x4, 5 + self.cell * y4, self.cell - 10, self.cell - 10);
@@ -635,7 +635,7 @@ export default {
               const img = new Image();
               for (let m = 0; m < len; m++) {
                 imgArr[m].push(existImg[m]);
-                img.src = require('../assets/images/' + imgArr[m][2] + '.png');
+                img.src = require('../assets/appicons/' + imgArr[m][2]);
                 img.onload = function() {
                   context.drawImage(img, 5 + self.cell * imgArr[m][0], 5 + self.cell * imgArr[m][1], self.cell - 10, self.cell - 10);
                 };

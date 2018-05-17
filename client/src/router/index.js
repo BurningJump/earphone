@@ -4,7 +4,6 @@ import Login from '@/pages/login';
 import Register from '@/pages/register';
 import Link from '@/pages/link';
 import Board from '@/pages/board';
-import Test from '@/pages/test';
 import GluttonousSnake from '@/pages/GluttonousSnake';
 import HelloWorld from '@/components/HelloWorld';
 
@@ -16,11 +15,6 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login
-    },
-    {
-      path: '/test',
-      name: 'Test',
-      component: Test
     },
     {
       path: '/register',
