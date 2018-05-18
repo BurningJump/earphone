@@ -29,6 +29,11 @@
 <script>
 // import level from './level.js'
 export default {
+  head() {
+    return {
+      title: '连连看'
+    }
+  },
   data() {
     return {
       imgUrl: '',
